@@ -1,35 +1,41 @@
 <?php
 
-// Composer autoloader
-$autoloader = __DIR__.'/../vendor/autoload.php';
-if (!file_exists($autoloader)) {
-  die('You must run `composer install` in the sample app directory');
-}
-require_once $autoloader;
+/* ------------------------------------------------------------------------------------------------
+ * Composer Autoloader
+ * -----------------------------------------------------------------------------------------------*/
+require_once __DIR__.'/../vendor/autoload.php';
 
-// Import classes
+/* ------------------------------------------------------------------------------------------------
+ * Class Imports
+ * -----------------------------------------------------------------------------------------------*/
 use \Slim\Slim;
 use \OpenTok\OpenTok;
 use \werx\Config\Providers\ArrayProvider;
 use \werx\Config\Container;
 
-// Slim application
+/* ------------------------------------------------------------------------------------------------
+ * Slim Application Initialization
+ * -----------------------------------------------------------------------------------------------*/
 $app = new Slim(array(
     'templates.path' => '../templates'
 ));
 
-// Configuration
+/* ------------------------------------------------------------------------------------------------
+ * Configuration
+ * -----------------------------------------------------------------------------------------------*/
 $provider = new ArrayProvider('../config');
 $config = new Container($provider);
+
 // Environment Selection
-// TODO: perhaps switch which mode should be explicitly conifigured, since development is already
-// the default and we know its set for free...?
 $app->configureMode('development', function () use ($config) {
     $config->setEnvironment('development');
 });
+
 $config->load(['opentok'], true);
 
-// Routing
+/* ------------------------------------------------------------------------------------------------
+ * Routing
+ * -----------------------------------------------------------------------------------------------*/
 $app->get('/foo', function () use ($app, $config) {
     $opentok = new OpenTok($config->opentok('key'), $config->opentok('secret'));
     $session = $opentok->createSession();
@@ -39,5 +45,7 @@ $app->get('/foo', function () use ($app, $config) {
     ));
 });
 
-// Initialization
+/* ------------------------------------------------------------------------------------------------
+ * Application Start
+ * -----------------------------------------------------------------------------------------------*/
 $app->run();
