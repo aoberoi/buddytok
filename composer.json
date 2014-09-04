@@ -11,5 +11,8 @@
     "require": {
         "opentok/opentok": "2.2.*",
         "slim/slim": "2.*"
+    },
+    "require-dev": {
+        "heroku/heroku-buildpack-php": "*"
     }
 }
