@@ -51,6 +51,6 @@ Heroku.
    -  `OPENTOK_KEY` - Your OpenTok API Key
    -  `OPENTOK_SECRET` - Your OpenTok API Secret
 *  The Slim application will only start reading its Heroku's config when its mode is set to
-   `'production'`. This can be done using Heroku config by setting the following key/value:
-   -  `SLIM_MODE` - Set this to `'production'` when the environment variables should be used to
+   `'production'`. This can be done using Heroku config by setting the following key:
+   -  `SLIM_MODE` - Set this to `production` when the environment variables should be used to
       configure the application.
