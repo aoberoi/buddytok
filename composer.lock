@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "f924e2b9920f118d29f76bf5770b77d6",
+    "hash": "8f3b47c383aefbc6d89f3fbe6fc0391a",
     "packages": [
         {
             "name": "guzzle/guzzle",
@@ -321,6 +321,47 @@
             "description": "Symfony EventDispatcher Component",
             "homepage": "http://symfony.com",
             "time": "2014-07-28 13:20:46"
+        },
+        {
+            "name": "werx/config",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/werx/config.git",
+                "reference": "ffc00beba00e2784caee5ee2ea401c5a9391513a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/werx/config/zipball/ffc00beba00e2784caee5ee2ea401c5a9391513a",
+                "reference": "ffc00beba00e2784caee5ee2ea401c5a9391513a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">= 5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*",
+                "squizlabs/php_codesniffer": "1.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "werx\\Config\\": "src/",
+                    "werx\\Config\\Providers\\": "src/Providers"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Josh Moody",
+                    "email": "jgmoody@gmail.com"
+                }
+            ],
+            "description": "Use environment-specific configuration files in your app.",
+            "time": "2014-07-31 03:19:29"
         }
     ],
     "packages-dev": [

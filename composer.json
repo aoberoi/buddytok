@@ -10,7 +10,8 @@
     ],
     "require": {
         "opentok/opentok": "2.2.*",
-        "slim/slim": "2.*"
+        "slim/slim": "2.*",
+        "werx/config": "1.*"
     },
     "require-dev": {
         "heroku/heroku-buildpack-php": "*"
