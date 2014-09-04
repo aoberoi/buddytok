@@ -19,6 +19,7 @@ use \Memcached;
  * Slim Application Initialization
  * -----------------------------------------------------------------------------------------------*/
 $app = new Slim(array(
+    'log.enabled' => true,
     'templates.path' => '../templates',
     'view' => new Twig()
 ));
@@ -57,6 +58,7 @@ $opentok = new OpenTok($config->opentok('key'), $config->opentok('secret'));
 if (!($presenceSessionId = $storage->get('presenceSessionId'))) {
     $presenceSessionId = $opentok->createSession()->getSessionId();
     $storage->set('presenceSessionId', $presenceSessionId);
+    $app->log->debug('New Presence Session created: ' . $presenceSessionId);
 }
 
 /* ------------------------------------------------------------------------------------------------
