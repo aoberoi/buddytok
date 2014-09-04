@@ -7,7 +7,7 @@
 
 {% block scripts %}
   {{ parent() }}
-  <!-- use script tag to pass data from server into client (JavaScript) -->
+  {# use script tag to pass data from server into client (JavaScript) #}
   <script>
     var opentokConfig = {
       apiKey : '{{ apiKey|e }}',
@@ -20,6 +20,8 @@
 {% endblock %}
 
 {% block content %}
+
+{# Connect Modal (initially hidden) #}
 <div class="modal fade" id="connectModal" tabindex="-1" role="dialog" aria-labelledby="connectModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog">
     <div class="modal-content">
