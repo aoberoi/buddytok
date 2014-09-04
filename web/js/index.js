@@ -44,8 +44,7 @@
     }
 
     // Retrieve a token
-    // TODO: remove sessionId
-    $.post('/user', { name: name, sessionId: otConfig.presenceSessionId })
+    $.post('/user', { name: name })
       .done(function(data) {
         user.token = data.token;
         presenceSession.connect(user.token, function(err) {

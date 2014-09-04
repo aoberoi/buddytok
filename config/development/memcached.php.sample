@@ -1,0 +1,17 @@
+<?php
+/* -----------------------------------------------------------------------------------------------
+ * Memcached Development Configuration (Sample)
+ *
+ * This file is meant to be copied without the ".sample" file extension but in the same directory.
+ * After copying, replace the values below with your own Memcached server.
+ * -----------------------------------------------------------------------------------------------*/
+
+return array(
+    'servers' => array(
+        array(
+            'localhost',
+            '11211'
+        )
+    ),
+    'sasl' => false
+);

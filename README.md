@@ -30,6 +30,10 @@ An OpenTok 1-to-1 solution focussed on adding Presence to an application
 1. You may change your status to "away" using the menu. If you do so, your status will change from
    "online" to "away" in all other users' list. An "away" user cannot recieve invitations.
 
+## Requirements
+
+*  **TODO**
+
 ## Code and Conceptual Walkthrough
 
 *  **TODO**
@@ -50,10 +54,17 @@ Heroku.
 
 *  The provided `Procfile` already decribes a web process which can launch this application.
 *  You should avoid commiting configuration and secrets to your code, and instead use Heroku's
-   config functionality. In order to configure the OpenTok details you need to set the following
-   keys:
+   config functionality.
+*  In order to configure the OpenTok details you need to set the following keys:
    -  `OPENTOK_KEY` - Your OpenTok API Key
    -  `OPENTOK_SECRET` - Your OpenTok API Secret
+*  In order to use the memcached storage, you must have the following keys set as long as you choose
+   Memcachier as your provider (or replace them inside `config/memcached.php` if you choose
+   another). The easiest way to set them is to simply run `heroku addons:add memcachier:dev`.
+   -  `MEMCACHIER_SERVERS` - A comma-separated list of servers, each of which follow the `host:port`
+      format
+   -  `MEMCACHIER_USERNAME` - The SASL username for authentication
+   -  `MEMCACHIER_PASSWORD` - The SASL password for authentication
 *  The Slim application will only start reading its Heroku's config when its mode is set to
    `'production'`. This can be done using Heroku config by setting the following key:
    -  `SLIM_MODE` - Set this to `production` when the environment variables should be used to
