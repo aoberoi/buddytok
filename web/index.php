@@ -40,6 +40,8 @@ $config->load(['opentok', 'memcached'], true);
 /* ------------------------------------------------------------------------------------------------
  * Storage Initialization
  * -----------------------------------------------------------------------------------------------*/
+$app->log->debug('memcached options:');
+$app->log->debug(print_r($config->memcached(), true));
 $storage = new Memcached('memcached_pool');
 $storage->setOptions($config->memcached('options', array()));
 if (is_array($config->memcached('sasl'))) {
