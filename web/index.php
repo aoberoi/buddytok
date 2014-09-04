@@ -9,6 +9,7 @@ require_once __DIR__.'/../vendor/autoload.php';
  * Class Imports
  * -----------------------------------------------------------------------------------------------*/
 use \Slim\Slim;
+use \Slim\Views\Twig;
 use \OpenTok\OpenTok;
 use \werx\Config\Providers\ArrayProvider;
 use \werx\Config\Container;
@@ -17,7 +18,8 @@ use \werx\Config\Container;
  * Slim Application Initialization
  * -----------------------------------------------------------------------------------------------*/
 $app = new Slim(array(
-    'templates.path' => '../templates'
+    'templates.path' => '../templates',
+    'view' => new Twig()
 ));
 
 /* ------------------------------------------------------------------------------------------------
@@ -36,10 +38,10 @@ $config->load(['opentok'], true);
 /* ------------------------------------------------------------------------------------------------
  * Routing
  * -----------------------------------------------------------------------------------------------*/
-$app->get('/foo', function () use ($app, $config) {
+$app->get('/', function () use ($app, $config) {
     $opentok = new OpenTok($config->opentok('key'), $config->opentok('secret'));
     $session = $opentok->createSession();
-    $app->render('foo.php', array(
+    $app->render('index.html', array(
         'sessionId' => $session->getSessionId(),
         'token' => $session->generateToken()
     ));

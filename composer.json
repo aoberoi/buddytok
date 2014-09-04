@@ -11,7 +11,9 @@
     "require": {
         "opentok/opentok": "2.2.*",
         "slim/slim": "2.*",
-        "werx/config": "1.*"
+        "werx/config": "1.*",
+        "twig/twig": "1.*",
+        "slim/views": "0.1.*"
     },
     "require-dev": {
         "heroku/heroku-buildpack-php": "*"
