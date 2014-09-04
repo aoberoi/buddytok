@@ -1,0 +1,15 @@
+{
+    "name": "opentok/buddytok",
+    "description": "An example OpenTok 1to1 application with Presence",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ankur Oberoi",
+            "email": "aoberoi@gmail.com"
+        }
+    ],
+    "require": {
+        "opentok/opentok": "2.2.*",
+        "slim/slim": "2.*"
+    }
+}
