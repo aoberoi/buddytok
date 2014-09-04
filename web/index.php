@@ -36,12 +36,17 @@ $app->configureMode('development', function () use ($config) {
 $config->load(['opentok'], true);
 
 /* ------------------------------------------------------------------------------------------------
+ * OpenTok Initialization
+ * -----------------------------------------------------------------------------------------------*/
+$opentok = new OpenTok($config->opentok('key'), $config->opentok('secret'));
+
+/* ------------------------------------------------------------------------------------------------
  * Routing
  * -----------------------------------------------------------------------------------------------*/
-$app->get('/', function () use ($app, $config) {
-    $opentok = new OpenTok($config->opentok('key'), $config->opentok('secret'));
+$app->get('/', function () use ($app, $config, $opentok) {
     $session = $opentok->createSession();
     $app->render('index.html', array(
+        'apiKey' => $config->opentok('key'),
         'sessionId' => $session->getSessionId(),
         'token' => $session->generateToken()
     ));

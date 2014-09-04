@@ -1,8 +1,39 @@
 {% extends "layout.html" %}
 
+{% block styles %}
+  {{ parent() }}
+  <link rel="stylesheet" href="/css/index.css">
+{% endblock %}
+
+{% block scripts %}
+  {{ parent() }}
+  <!-- use script tag to pass data from server into client (JavaScript) -->
+  <script>
+    var opentokConfig = {
+      apiKey : '{{ apiKey|e }}',
+      presenceSessionId : '{{ sessionId|e }}',
+      presenceToken : '{{ token|e }}'
+    };
+  </script>
+  <script src="https://static.opentok.com/webrtc/v2.2/js/opentok.min.js"></script>
+  <script src="/js/index.js"></script>
+{% endblock %}
+
 {% block content %}
-    <h2>Session ID</h2>
-    <p>{{ sessionId }}</p>
-    <h2>Token</h2>
-    <p>{{ token }}</p>
+<div class="modal fade" id="connectModal" tabindex="-1" role="dialog" aria-labelledby="connectModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="connectModalLabel">Connect to Join</h4>
+      </div>
+      <div class="modal-body">
+        <p>TBD</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Connect</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

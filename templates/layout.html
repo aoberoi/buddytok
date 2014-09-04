@@ -3,15 +3,19 @@
 <head>
     <meta charset="utf-8" />
     <title>BuddyTok</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block styles %}
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    {% endblock %}
 </head>
-<body>
+<body class="container">
 
     {% block content %}
     {% endblock %}
 
-    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="https://static.opentok.com/webrtc/v2.2/js/opentok.min.js"></script>
+    {% block scripts %}
+      <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    {% endblock %}
 </body>
 </html>
