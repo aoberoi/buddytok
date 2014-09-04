@@ -27,10 +27,15 @@
         <h4 class="modal-title" id="connectModalLabel">Connect to Join</h4>
       </div>
       <div class="modal-body">
-        <p>TBD</p>
+        <form role="form" id="connect-form">
+          <div class="form-group">
+            <label for="userName">Name</label>
+            <input type="text" class="form-control" id="connect-form-username" placeholder="Enter a name">
+          </div>
+        </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Connect</button>
+        <button type="button" id="connect-form-btn" data-loading-text="Connecting..." class="btn btn-primary">Connect</button>
       </div>
     </div>
   </div>

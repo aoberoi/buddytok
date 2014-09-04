@@ -52,6 +52,16 @@ $app->get('/', function () use ($app, $config, $opentok) {
     ));
 });
 
+$app->post('/user', function () use ($app, $opentok) {
+    $app->response->headers->set('Content-Type', 'application/json');
+    // TODO: enforce uniqueness on names?
+    $token = $opentok->generateToken($app->request->params('sessionId'), array(
+        'data' => json_encode(array( 'name' => $app->request->params('name') ))
+    ));
+    $responseData = array( 'token' => $token );
+    $app->response->setBody(json_encode($responseData));
+});
+
 /* ------------------------------------------------------------------------------------------------
  * Application Start
  * -----------------------------------------------------------------------------------------------*/
