@@ -18,11 +18,11 @@ return array(
         'password' => getenv('MEMCACHIER_PASSWORD')
     ),
     'options' => array(
-        array(Memcached::OPT_BINARY_PROTOCOL, TRUE),
-        array(Memcached::OPT_NO_BLOCK, TRUE),
-        array(Memcached::OPT_AUTO_EJECT_HOSTS, TRUE),
-        array(Memcached::OPT_CONNECT_TIMEOUT, 2000),
-        array(Memcached::OPT_POLL_TIMEOUT, 2000),
-        array(Memcached::OPT_RETRY_TIMEOUT, 2)
+        Memcached::OPT_BINARY_PROTOCOL => TRUE,
+        Memcached::OPT_NO_BLOCK => TRUE,
+        Memcached::OPT_AUTO_EJECT_HOSTS => TRUE,
+        Memcached::OPT_CONNECT_TIMEOUT => 2000,
+        Memcached::OPT_POLL_TIMEOUT => 2000,
+        Memcached::OPT_RETRY_TIMEOUT => 2
     )
 );
