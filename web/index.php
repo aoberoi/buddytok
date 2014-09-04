@@ -51,6 +51,7 @@ if (is_array($config->memcached('sasl'))) {
 if (!$storage->getServerList()) {
     $storage->addServers($config->memcached('servers'));
 }
+$app->log->debug('using binary protocol: ' . ($storage->getOption(Memcached::OPT_BINARY_PROTOCOL) ? 'TRUE' : 'FALSE' ));
 
 
 /* ------------------------------------------------------------------------------------------------
