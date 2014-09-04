@@ -9,18 +9,10 @@
 
 use \Memcached;
 
-function parseServers($serverString)
-{
-    $serversArray = array();
-    $servers = explode(",", $serverString);
-    foreach ($servers as $s) {
-        $serversArray[] = explode(":", $s);
-    }
-    return $serversArray;
-}
+require_once '../lib/helpers.php';
 
 return array(
-    'servers' => parseServers(getenv('MEMCACHIER_SERVERS')),
+    'servers' => parseMemcachedServers(getenv('MEMCACHIER_SERVERS')),
     'sasl' => array(
         'username' => getenv('MEMCACHIER_USERNAME'),
         'password' => getenv('MEMCACHIER_PASSWORD')
