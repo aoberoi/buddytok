@@ -44,7 +44,9 @@ An OpenTok 1-to-1 solution focussed on adding Presence to an application
 
 *  Testing?
 *  Separate boilerplate from actual substance (routing) in `web/index.php`
-*  Only need to persist one global sessionId, do we really need a database?
+*  script to generate presence session, perhaps on build for heroku
+*  synchronize client assets using something like bower?
+*  lower log level when done with development
 
 ## Appendix
 
