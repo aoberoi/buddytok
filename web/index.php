@@ -40,8 +40,6 @@ $config->load(['opentok', 'memcached'], true);
 /* ------------------------------------------------------------------------------------------------
  * Storage Initialization
  * -----------------------------------------------------------------------------------------------*/
-$app->log->debug('memcached options:');
-$app->log->debug(json_encode($config->memcached('options')));
 $storage = new Memcached('memcached_pool');
 $storage->setOptions($config->memcached('options', array()));
 if (is_array($config->memcached('sasl'))) {
@@ -51,7 +49,7 @@ if (is_array($config->memcached('sasl'))) {
 if (!$storage->getServerList()) {
     $storage->addServers($config->memcached('servers'));
 }
-$app->log->debug('using binary protocol: ' . ($storage->getOption(Memcached::OPT_BINARY_PROTOCOL) ? 'TRUE' : 'FALSE' ));
+$app->log->debug('memcached binary protocol: ' . ($storage->getOption(Memcached::OPT_BINARY_PROTOCOL) ? 'TRUE' : 'FALSE' ));
 
 
 /* ------------------------------------------------------------------------------------------------
