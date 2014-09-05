@@ -44,6 +44,7 @@
       connectFormUsername.parents('.form-group').addClass('has-error');
       return errorHandler();
     }
+    user.name = name;
 
     // Retrieve a token
     $.post('/user', { name: name })
@@ -68,18 +69,8 @@
   // Presence Session
   var presenceSessionConnected = function(event) {
     user.connected = true;
-    presenceSession.signal({
-      type: "userOnline",
-      data: JSON.stringify({
-        "name" : user.name,
-        "status" : "online"
-      })
-    }, function(err) {
-      if (err) {
-        // TODO: real error handling. retry?
-        console.log('failed to send userOnline signal');
-      }
-    });
+    user.status = "online";
+    sendStatusUpdate();
   };
 
   var presenceSessionDisconnected = function(event) {
@@ -89,6 +80,7 @@
   var userCameOnline = function(event) {
     if ((event.from.connectionId !== presenceSession.connection.connectionId) && !(userList[event.from.connectionId])) {
       userList[event.from.connectionId] = JSON.parse(event.data);
+      sendStatusUpdate(event.from);
     }
     // TODO: render User List (or just do a smaller add operation)
     console.log(userList);
@@ -101,6 +93,26 @@
     // TODO: render User List (or just do a smaller remove operation)
     console.log(userList);
   };
+
+  var sendStatusUpdate = function(recipient) {
+    var signal = {
+      type: "userOnline",
+      data: JSON.stringify({
+        "name" : user.name,
+        "status" : user.status
+      })
+    };
+    if (recipient) {
+      signal.to = recipient;
+    }
+    presenceSession.signal(signal, function(err) {
+      if (err) {
+        // TODO: real error handling. retry?
+        console.log('failed to send userOnline signal');
+      }
+    });
+  };
+
 
 
   // Initialization function
