@@ -14,8 +14,7 @@
         "werx/config": "1.*",
         "twig/twig": "1.*",
         "slim/views": "0.1.*",
-        "php": ">=5.3.2",
-        "ext-memcached": "*"
+        "php": ">=5.3.2"
     },
     "require-dev": {
         "heroku/heroku-buildpack-php": "*"

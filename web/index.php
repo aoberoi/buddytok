@@ -35,50 +35,31 @@ $app->configureMode('development', function () use ($config) {
     $config->setEnvironment('development');
 });
 
-$config->load(['opentok', 'memcached'], true);
-
-/* ------------------------------------------------------------------------------------------------
- * Storage Initialization
- * -----------------------------------------------------------------------------------------------*/
-$storage = new Memcached('memcached_pool');
-$storage->setOptions($config->memcached('options', array()));
-if (is_array($config->memcached('sasl'))) {
-    $storage->setSaslAuthData($config->memcached('options')['username'],
-                              $config->memcached('options')['password']);
-}
-if (!$storage->getServerList()) {
-    $storage->addServers($config->memcached('servers'));
-}
-$app->log->debug('memcached binary protocol: ' . ($storage->getOption(Memcached::OPT_BINARY_PROTOCOL) ? 'TRUE' : 'FALSE' ));
-
+$config->load(array('opentok'), true);
 
 /* ------------------------------------------------------------------------------------------------
  * OpenTok Initialization
  * -----------------------------------------------------------------------------------------------*/
 $opentok = new OpenTok($config->opentok('key'), $config->opentok('secret'));
-if (!($presenceSessionId = $storage->get('presenceSessionId'))) {
-    $presenceSessionId = $opentok->createSession()->getSessionId();
-    $storage->set('presenceSessionId', $presenceSessionId);
-    $app->log->debug('New Presence Session created: ' . $presenceSessionId);
-}
 
 /* ------------------------------------------------------------------------------------------------
  * Routing
  * -----------------------------------------------------------------------------------------------*/
-$app->get('/', function () use ($app, $config, $presenceSessionId) {
+$app->get('/', function () use ($app, $config) {
     $app->render('index.html', array(
         'apiKey' => $config->opentok('key'),
-        'sessionId' => $presenceSessionId,
+        'sessionId' => $config->opentok('presenceSession')
     ));
 });
 
-$app->post('/user', function () use ($app, $opentok, $presenceSessionId) {
-    $app->response->headers->set('Content-Type', 'application/json');
-    // TODO: enforce uniqueness on names?
-    $token = $opentok->generateToken($presenceSessionId, array(
+// NOTE: there is no enforced uniqueness on 'name' values for users
+$app->post('/user', function () use ($app, $opentok, $config) {
+    $token = $opentok->generateToken($config->opentok('presenceSession'), array(
         'data' => json_encode(array( 'name' => $app->request->params('name') ))
     ));
     $responseData = array( 'token' => $token );
+
+    $app->response->headers->set('Content-Type', 'application/json');
     $app->response->setBody(json_encode($responseData));
 });
 
@@ -86,3 +67,4 @@ $app->post('/user', function () use ($app, $opentok, $presenceSessionId) {
  * Application Start
  * -----------------------------------------------------------------------------------------------*/
 $app->run();
+

@@ -7,8 +7,10 @@ An OpenTok 1-to-1 solution focussed on adding Presence to an application
 
 1. Clone the repository.
 1. Copy the `config/development/opentok.php.sample` file to `config/development/opentok.php` and
-   replace the key and secret with your own values from the [TokBox
-   Dashboard](https://dashboard.tokbox.com)
+   use your own values for the `key` and `secret` from the [TokBox
+   Dashboard](https://dashboard.tokbox.com). Also, generate one relayed session (you can use the
+   Project Tools in the Dashboard for this) and use the Session ID as the value for the
+   `presenceSession`.
 1. Use [Composer](https://getcomposer.org/) to install dependencies: `composer install`
 1. Use a webserver (such as Apache, nginx, etc) to the `web` directory as the document root. In the
    case of Apache, the provided `.htaccess` file will help properly handle URL rewriting. See the
@@ -58,13 +60,8 @@ Heroku.
 *  In order to configure the OpenTok details you need to set the following keys:
    -  `OPENTOK_KEY` - Your OpenTok API Key
    -  `OPENTOK_SECRET` - Your OpenTok API Secret
-*  In order to use the memcached storage, you must have the following keys set as long as you choose
-   Memcachier as your provider (or replace them inside `config/memcached.php` if you choose
-   another). The easiest way to set them is to simply run `heroku addons:add memcachier:dev`.
-   -  `MEMCACHIER_SERVERS` - A comma-separated list of servers, each of which follow the `host:port`
-      format
-   -  `MEMCACHIER_USERNAME` - The SASL username for authentication
-   -  `MEMCACHIER_PASSWORD` - The SASL password for authentication
+   -  `OPENTOK_PRESENCE_SESSION` - A Relayed Session ID that is used exclusively for presence in the
+      application.
 *  The Slim application will only start reading its Heroku's config when its mode is set to
    `'production'`. This can be done using Heroku config by setting the following key:
    -  `SLIM_MODE` - Set this to `production` when the environment variables should be used to

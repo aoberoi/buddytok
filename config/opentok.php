@@ -8,5 +8,6 @@
  * -----------------------------------------------------------------------------------------------*/
 return array(
     'key' => getenv('OPENTOK_KEY'),
-    'secret' => getenv('OPENTOK_SECRET')
+    'secret' => getenv('OPENTOK_SECRET'),
+    'presenceSession' => getenv('OPENTOK_PRESENCE_SESSION')
 );
