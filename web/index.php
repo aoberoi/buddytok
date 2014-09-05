@@ -54,6 +54,7 @@ $app->get('/', function () use ($app, $config) {
 
 // NOTE: there is no enforced uniqueness on 'name' values for users
 $app->post('/user', function () use ($app, $opentok, $config) {
+    // TODO: validation
     $token = $opentok->generateToken($config->opentok('presenceSession'), array(
         'data' => json_encode(array( 'name' => $app->request->params('name') ))
     ));

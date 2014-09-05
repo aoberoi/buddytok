@@ -15,7 +15,11 @@
       presenceToken : '{{ token|e }}'
     };
   </script>
-  <script src="https://static.opentok.com/webrtc/v2.2/js/opentok.min.js"></script>
+  {# enable logging during development #}
+  <script>
+    log.setLevel('info');
+  </script>
+  <script src="//static.opentok.com/webrtc/v2.2/js/opentok.min.js"></script>
   <script src="/js/index.js"></script>
 {% endblock %}
 
