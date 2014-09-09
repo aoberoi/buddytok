@@ -10,7 +10,7 @@
   var presenceSession;
 
   // DOM references
-  var connectModal, connectForm, connectFormButton, userListTableBody;
+  var connectModal, connectForm, connectFormButton, buddyList;
 
   // Templates
   var userListTemplate;
@@ -96,7 +96,7 @@
       log.info(userList);
     }
     // TODO: just do a smaller add operation?
-    userListTableBody.html(userListTemplate({ users: userList }));
+    buddyList.html(userListTemplate({ users: userList }));
   };
   var userWentOffline = function(event) {
     if (event.connection.connectionId in userList) {
@@ -105,7 +105,7 @@
       log.info(userList);
     }
     // TODO: just do a smaller remove operation?
-    userListTableBody.html(userListTemplate({ users: userList }));
+    buddyList.html(userListTemplate({ users: userList }));
   };
 
   // Initialization function
@@ -114,14 +114,14 @@
     connectModal = $('#connectModal');
     connectForm = $('#connect-form');
     connectFormButton = $('#connect-form-btn');
-    userListTableBody = $('#user-list-table tbody');
+    buddyList = $('#buddy-list');
 
     // Populate Templates
     userListTemplate = _.template($('#tpl-user-list').html());
 
     // DOM initialization
     connectModal.modal('show');
-    userListTableBody.html(userListTemplate({ users: userList }));
+    buddyList.html(userListTemplate({ users: userList }));
 
     // Initialize application state
     user.connected = false;
