@@ -19,6 +19,7 @@
   <script>
     log.setLevel('info');
   </script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
   <script src="//static.opentok.com/webrtc/v2.2/js/opentok.min.js"></script>
   <script src="/js/index.js"></script>
 {% endblock %}
@@ -46,5 +47,37 @@
     </div>
   </div>
 </div>
+
+<div class="row">
+  {# User List Placeholder #}
+  <div class="col-sm-6">
+    <table class="table table-hover" id="user-list-table">
+      <thead>
+        <tr>
+          <th>Buddies</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{# User List Template #}
+<script type="text/template" id="tpl-user-list">
+  <% if (_.size(users) > 0) { %>
+    <% _.forEach(users, function(user, connectionId) { %>
+      <tr>
+        <td class="name"><%- user.name %></td>
+        <td class="action" data-connection-id="<%= connectionId %>"></td>
+      </tr>
+    <% }); %>
+  <% } else { %>
+    <tr>
+      <td colspan="2">No Users Online</td>
+    </tr>
+  <% } %>
+</script>
 
 {% endblock %}

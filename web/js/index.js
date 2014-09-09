@@ -2,17 +2,18 @@
  * BuddyTok
  * ----------------------------------------------------------------------------------------------*/
 // Explicitly declare dependencies and prevent leaking into global scope
-(function(window, document, $, OT, otConfig, log, undefined) {
+(function(window, document, $, _, OT, otConfig, log, undefined) {
 
-  // Global state
+  // Application state
   var user = {}; // Properties: 'connected', 'status', 'token', 'name'
   var userList = {}; // Map of connectionId : user, where user is an object with key 'name'
   var presenceSession;
 
-  // DOM queries
-  var connectModal = $('#connectModal');
-  var connectForm = $('#connect-form');
-  var connectFormButton = $('#connect-form-btn');
+  // DOM references
+  var connectModal, connectForm, connectFormButton, userListTableBody;
+
+  // Templates
+  var userListTemplate;
 
   // Connect Form event handler
   var connectSubmission = function(event) {
@@ -71,9 +72,6 @@
         errorHandler();
       });
   };
-  // Attach event handler to DOM events
-  connectFormButton.click(connectSubmission);
-  connectForm.submit(connectSubmission);
 
 
   // Presence Session management
@@ -97,7 +95,8 @@
       log.info('User added to user list');
       log.info(userList);
     }
-    // TODO: render User List (or just do a smaller add operation)
+    // TODO: just do a smaller add operation?
+    userListTableBody.html(userListTemplate({ users: userList }));
   };
   var userWentOffline = function(event) {
     if (event.connection.connectionId in userList) {
@@ -105,19 +104,38 @@
       log.info('User removed from user list');
       log.info(userList);
     }
-    // TODO: render User List (or just do a smaller remove operation)
+    // TODO: just do a smaller remove operation?
+    userListTableBody.html(userListTemplate({ users: userList }));
   };
 
   // Initialization function
   var init = function() {
+    // Populate DOM references with queries
+    connectModal = $('#connectModal');
+    connectForm = $('#connect-form');
+    connectFormButton = $('#connect-form-btn');
+    userListTableBody = $('#user-list-table tbody');
+
+    // Populate Templates
+    userListTemplate = _.template($('#tpl-user-list').html());
+
+    // DOM initialization
+    connectModal.modal('show');
+    userListTableBody.html(userListTemplate({ users: userList }));
+
+    // Initialize application state
     user.connected = false;
     presenceSession = OT.initSession(otConfig.apiKey, otConfig.presenceSessionId);
+
+    // Attach event handlers to DOM
+    connectFormButton.click(connectSubmission);
+    connectForm.submit(connectSubmission);
+
+    // Attach other event handlers
     presenceSession.on('sessionConnected', presenceSessionConnected);
     presenceSession.on('sessionDisconnected', presenceSessionDisconnected);
     presenceSession.on('connectionCreated', userCameOnline);
     presenceSession.on('connectionDestroyed', userWentOffline);
-
-    connectModal.modal('show');
   };
 
   // Once the DOM is ready we can initialize
@@ -125,4 +143,4 @@
     init();
   });
 
-}(window, document, jQuery, OT, opentokConfig, log));
+}(window, document, jQuery, _, OT, opentokConfig, log));
