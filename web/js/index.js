@@ -6,11 +6,11 @@
 
   // Application state
   var user = {}; // Properties: 'connected', 'status', 'token', 'name'
-  var userList = {}; // Map of connectionId : user, where user is an object with key 'name'
+  var userList = {}; // Map of connectionId : user, where user is an object with keys 'name', 'status'
   var presenceSession;
 
   // DOM references
-  var connectModal, connectForm, connectFormButton, buddyList, userInfoEl;
+  var connectModalEl, connectFormEl, connectFormButtonEl, userListEl, userInfoEl;
 
   // Templates
   var userListTemplate, userInfoTemplate;
@@ -18,16 +18,15 @@
   // Connect Form event handler
   var connectSubmission = function(event) {
     event.preventDefault();
-    var btn = connectFormButton;
     var connectFormUsername = $('#connect-form-username');
-    btn.button('loading');
+    connectFormButtonEl.button('loading');
 
     // Result handling functions
     var successHandler = function() {
       log.info('Connect form completed');
       // Reset form fields
       connectFormUsername.val('');
-      connectModal.modal('hide');
+      connectModalEl.modal('hide');
       alwaysHandler();
     };
     var errorHandler = function() {
@@ -37,7 +36,7 @@
     };
     var alwaysHandler = function() {
       // reset button state
-      btn.button('reset');
+      connectFormButtonEl.button('reset');
     };
 
     var name = connectFormUsername.val();
@@ -101,8 +100,7 @@
       log.info('User added to user list');
       log.info(userList);
     }
-    // TODO: just do a smaller add operation?
-    buddyList.html(userListTemplate({ users: userList }));
+    userListEl.html(userListTemplate({ users: userList }));
   };
   var userWentOffline = function(event) {
     if (event.connection.connectionId in userList) {
@@ -110,17 +108,16 @@
       log.info('User removed from user list');
       log.info(userList);
     }
-    // TODO: just do a smaller remove operation?
-    buddyList.html(userListTemplate({ users: userList }));
+    userListEl.html(userListTemplate({ users: userList }));
   };
 
   // Initialization function
   var init = function() {
     // Populate DOM references with queries
-    connectModal = $('#connectModal');
-    connectForm = $('#connect-form');
-    connectFormButton = $('#connect-form-btn');
-    buddyList = $('#buddy-list');
+    connectModalEl = $('#connect-modal');
+    connectFormEl = $('#connect-form');
+    connectFormButtonEl = $('#connect-form-btn');
+    userListEl = $('#user-list');
     userInfoEl = $('#user-info');
 
     // Populate Templates
@@ -128,16 +125,16 @@
     userInfoTemplate = _.template($('#tpl-user-info').html());
 
     // DOM initialization
-    connectModal.modal('show');
-    buddyList.html(userListTemplate({ users: userList }));
+    connectModalEl.modal('show');
+    userListEl.html(userListTemplate({ users: userList }));
 
     // Initialize application state
     user.connected = false;
     presenceSession = OT.initSession(otConfig.apiKey, otConfig.presenceSessionId);
 
     // Attach event handlers to DOM
-    connectFormButton.click(connectSubmission);
-    connectForm.submit(connectSubmission);
+    connectFormButtonEl.click(connectSubmission);
+    connectFormEl.submit(connectSubmission);
 
     // Attach other event handlers
     presenceSession.on('sessionConnected', presenceSessionConnected);

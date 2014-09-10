@@ -65,13 +65,9 @@ There are some concepts that are intentionally left out.
 *  synchronize client assets using something like bower?
 *  lower log level when done with development
 *  rename variables for consistency
-   -  use 'El' suffix for all DOM elements
-   -  don't use 'buddy' in variable names in JS, its more like a design/marketing word
    -  should we use css classes instead of super-high-specificity id's?
-   -  use dashed names for anything in markup (classes, ids, etc)
-   -  use camelCased names for anything in JS
 *  problems with code structure
-   -  should we separate by visual component (eg. userList, userInfo, currentChat, invite, etc)?
+   -  should we separate by visual component (eg. connectForm, userList, userInfo, currentChat, invite, etc)?
    -  as soon as we separate, we need to establish how objects communicate (eg. event bus,
       dependency injection, DOM events, etc)
 *  add `/about` page
