@@ -8,6 +8,7 @@
   var user = {}; // Properties: 'connected', 'status', 'token', 'name'
   var userList = {}; // Map of connectionId : user, where user is an object with keys 'name', 'status'
   var presenceSession;
+  var currentChat, currentChatSession;
 
   // DOM references
   var connectModalEl, connectFormEl, connectFormButtonEl, userListEl, userInfoEl;
@@ -71,6 +72,86 @@
       });
   };
 
+  // Invite button event handler
+  // TODO: button enabling/disabling
+  var inviteUser = function (event) {
+    var inviteButton = $(this),
+        inviteeConnectionId = inviteButton.data('connectionId');
+
+    log.info('Inviting user at connectionId: ', inviteeConnectionId);
+
+    var invitee = userList[inviteeConnectionId];
+
+    if (invitee === undefined) {
+      // TODO: surface an error
+      log.error('Invitee not found in user list');
+      return;
+    }
+    log.info('Invitee', invitee);
+
+    $.post('/chats', { invitee: invitee.name })
+      .done(function(data) {
+        log.info('Retrieved new chat session');
+        currentChat = data; // this should include 'chatSessionId' and 'inviterToken'
+        var inviteSignal = {
+          type: 'chatInvite',
+          // TODO: NON-STANDARD
+          to: presenceSession.connections.get(inviteeConnectionId),
+          data: JSON.stringify(_.pick(currentChat, 'chatSessionId'))
+        };
+        presenceSession.signal(inviteSignal, function(err) {
+          if (err) {
+            // TODO: surface an error
+            log.error('Error sending invitation signal: ' + err.reason);
+          } else {
+            // TODO: invitation success
+            log.info('Invitation signal sent');
+            connectToChat();
+          }
+        });
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        // TODO: surface an error
+        log.error('Error creating a new chat');
+      });
+  };
+  // Invite signal hander
+  var inviteReceived = function(event) {
+    // TODO: UI
+    log.info('Received chat invitation from connection ID:', event.from.connectionId);
+
+    var inviter = userList[event.from.connectionId];
+    if (inviter === undefined) {
+      // TODO: surface an error
+      log.error('Inviter not found in user list');
+      return;
+    }
+    log.info('Inviter', inviter);
+
+    var signalData = JSON.parse(event.data),
+        chatSessionId = signalData.chatSessionId;
+    if (chatSessionId === undefined) {
+      log.error('Chat session ID not found in signal');
+      return;
+    }
+
+    $.get('/chats', { chatSessionId: chatSessionId })
+      .done(function(data) {
+        log.info('Retrieved chat');
+
+        currentChat = data;
+        // TODO: wait for user to 'accept' or 'decline' in the UI
+
+        connectToChat();
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        // TODO: surface an error
+        log.error('Error retrieving chat');
+      });
+
+
+  };
+
 
   // Presence Session management
   // TODO: in order to implement switching 'status', there will need to be some signal-based
@@ -110,6 +191,37 @@
     userListEl.html(userListTemplate({ users: userList }));
   };
 
+  // Chat management
+  // TODO: publish and subscribe
+  // TODO: UI: 'waiting for xxx to join'
+  // TODO: end chat
+  var connectToChat = function() {
+    // TODO: draw UI for current chat
+    currentChatSession = OT.initSession(otConfig.apiKey, currentChat.chatSessionId);
+    currentChatSession.on('sessionConnected', chatSessionConnected);
+    currentChatSession.on('sessionDisconnected', chatSessionDisconnected);
+    currentChatSession.on('streamCreated', chatStreamCreated);
+    currentChatSession.on('streamDestroyed', chatStreamDestroyed);
+    var token = currentChat.inviterToken || currentChat.inviteeToken;
+    currentChatSession.connect(token, function(err) {
+      if (err) {
+        // TODO: surface an error
+      }
+    });
+  };
+  var chatSessionConnected = function(event) {
+    log.info('Chat session connected');
+  };
+  var chatSessionDisconnected = function(event) {
+    log.info('Chat session disconnected');
+  };
+  var chatStreamCreated = function(event) {
+    log.info('Chat session stream created');
+  };
+  var chatStreamDestroyed = function(event) {
+    log.info('Chat session stream destroyed');
+  };
+
   // Initialization function
   var init = function() {
     // Populate DOM references with queries
@@ -134,12 +246,14 @@
     // Attach event handlers to DOM
     connectFormButtonEl.click(connectSubmission);
     connectFormEl.submit(connectSubmission);
+    userListEl.on('click', '.invite-button', inviteUser);
 
     // Attach other event handlers
     presenceSession.on('sessionConnected', presenceSessionConnected);
     presenceSession.on('sessionDisconnected', presenceSessionDisconnected);
     presenceSession.on('connectionCreated', userCameOnline);
     presenceSession.on('connectionDestroyed', userWentOffline);
+    presenceSession.on('signal:chatInvite', inviteReceived);
   };
 
   // Once the DOM is ready we can initialize

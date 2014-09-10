@@ -70,8 +70,8 @@
 <script type="text/template" id="tpl-user-list">
   <% if (_.size(users) > 0) { %>
     <% _.forEach(users, function(user, connectionId) { %>
-      <div class="list-group-item buddy" data-connection-id="<%- connectionId %>">
-        <button type="button" class="btn btn-default pull-right">
+      <div class="list-group-item buddy">
+        <button type="button" class="btn btn-default pull-right invite-button" data-connection-id="<%- connectionId %>">
           <span class="glyphicon glyphicon-facetime-video"></span>
         </button>
         <p class="list-group-item-text buddy-name"><%- user.name %></p>

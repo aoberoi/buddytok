@@ -76,6 +76,7 @@ There are some concepts that are intentionally left out.
 *  possibly add a landing page so that the user has some idea of what they are doing before they use
    the app
 *  allow for shared configuration (such as validation parameters) between the server and the client.
+*  run this through jshint with javascript style guideline
 
 ## Appendix
 
