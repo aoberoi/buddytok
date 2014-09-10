@@ -159,7 +159,7 @@
   var presenceSessionConnected = function(event) {
     log.info('Presence session connected');
     user.connected = true;
-    user.status = "online";
+    user.status = 'online';
 
     // Reflect connectedness in UI
     userInfoEl.html(userInfoTemplate({ user: _.pick(user, 'name', 'connected') }));
@@ -167,6 +167,8 @@
   var presenceSessionDisconnected = function(event) {
     // TODO: if this was unintentional, attempt reconnect
     log.info('Presence session disconnected');
+    user.connected = false;
+    user.status = 'disconnected';
 
     // Reflect connectedness in UI
     userInfoEl.html(userInfoTemplate({ user: _.pick(user, 'name', 'connected') }));
@@ -238,9 +240,11 @@
     // DOM initialization
     connectModalEl.modal('show');
     userListEl.html(userListTemplate({ users: userList }));
+    userInfoEl.html(userInfoTemplate({ user: _.pick(user, 'name', 'connected') }));
 
     // Initialize application state
     user.connected = false;
+    user.status = 'disconnected';
     presenceSession = OT.initSession(otConfig.apiKey, otConfig.presenceSessionId);
 
     // Attach event handlers to DOM
