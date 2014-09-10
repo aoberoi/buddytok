@@ -47,6 +47,21 @@ An OpenTok 1-to-1 solution focussed on adding Presence to an application
 *  script to generate presence session, perhaps on build for heroku
 *  synchronize client assets using something like bower?
 *  lower log level when done with development
+*  rename variables for consistency
+   -  use 'El' suffix for all DOM elements
+   -  don't use 'buddy' in variable names in JS, its more like a design/marketing word
+   -  should we use css classes instead of super-high-specificity id's?
+   -  use dashed names for anything in markup (classes, ids, etc)
+   -  use camelCased names for anything in JS
+*  problems with code structure
+   -  should we separate by visual component (eg. userList, userInfo, currentChat, invite, etc)?
+   -  as soon as we separate, we need to establish how objects communicate (eg. event bus,
+      dependency injection, DOM events, etc)
+*  add `/about` page
+*  add a connected/disconnected icon to the user info
+*  add statuses (see some comments in code), also add dropdown UI to user info
+*  possibly add a landing page so that the user has some idea of what they are doing before they use
+   the app
 
 ## Appendix
 
