@@ -66,7 +66,7 @@
   </div>
 </div>
 
-{# User List Template #}
+{# User List template #}
 <script type="text/template" id="tpl-user-list">
   <% if (_.size(users) > 0) { %>
     <% _.forEach(users, function(user, connectionId) { %>
@@ -84,7 +84,7 @@
   <% } %>
 </script>
 
-{# User info template #}
+{# User Info template #}
 <script type="text/template" id="tpl-user-info">
   <% if (user.connected) { %>
     Connected as <%- user.name %>

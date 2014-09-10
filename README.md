@@ -75,6 +75,7 @@ There are some concepts that are intentionally left out.
 *  add statuses (see some comments in code), also add dropdown UI to user info
 *  possibly add a landing page so that the user has some idea of what they are doing before they use
    the app
+*  allow for shared configuration (such as validation parameters) between the server and the client.
 
 ## Appendix
 
