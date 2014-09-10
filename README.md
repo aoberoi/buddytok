@@ -36,6 +36,23 @@ An OpenTok 1-to-1 solution focussed on adding Presence to an application
 
 *  **TODO**
 
+## What's Missing
+
+There are some concepts that are intentionally left out.
+
+*  User authentication and authorization: Typically, before allowing a user to access a session you
+   would want to ask them to identify themselves through a signup process. This could be verified
+   using an email address or some other type of identification. Then, before allowing access to the
+   session (by generating a token or even the page on which they would land) the server would
+   authorize the user, often times by checking a session cookie. This sample is open to anonymous
+   access and doesn't intend to add those concepts.
+
+*  Background notification
+
+*  Mobile
+
+*  State persistence
+
 ## Code and Conceptual Walkthrough
 
 *  **TODO**
