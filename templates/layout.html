@@ -23,10 +23,11 @@
         </div>
         <div class="collapse navbar-collapse" id="navbar-collapse-1">
           <div class="navbar-right">
-            <ul class="nav navbar-nav">
-              <li><a href="/about">About</a></li>
-            </ul>
-            <p class="navbar-text">Not Connected</p>
+            {% block navbar_right %}
+              <ul class="nav navbar-nav">
+                <li><a href="/about">About</a></li>
+              </ul>
+            {% endblock %}
           </div>
         </div>
       </div>

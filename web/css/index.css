@@ -1,3 +1,7 @@
 #buddy-list .list-group-item-text {
   line-height: 2.3;
 }
+
+#user-info {
+  font-weight: bold;
+}

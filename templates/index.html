@@ -5,6 +5,11 @@
   <link rel="stylesheet" href="/css/index.css">
 {% endblock %}
 
+{% block navbar_right %}
+  {{ parent() }}
+  <p class="navbar-text" id="user-info">Not Connected</p>
+{% endblock %}
+
 {% block scripts %}
   {{ parent() }}
   {# use script tag to pass data from server into client (JavaScript) #}
@@ -76,6 +81,15 @@
       <div class="list-group-item">
         <p class="list-group-item-text">No Buddies</p>
       </div>
+  <% } %>
+</script>
+
+{# User info template #}
+<script type="text/template" id="tpl-user-info">
+  <% if (user.connected) { %>
+    Connected as <%- user.name %>
+  <% } else { %>
+    Not Connected
   <% } %>
 </script>
 

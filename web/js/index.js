@@ -10,10 +10,10 @@
   var presenceSession;
 
   // DOM references
-  var connectModal, connectForm, connectFormButton, buddyList;
+  var connectModal, connectForm, connectFormButton, buddyList, userInfoEl;
 
   // Templates
-  var userListTemplate;
+  var userListTemplate, userInfoTemplate;
 
   // Connect Form event handler
   var connectSubmission = function(event) {
@@ -81,10 +81,16 @@
     log.info('Presence session connected');
     user.connected = true;
     user.status = "online";
+
+    // Reflect connectedness in UI
+    userInfoEl.html(userInfoTemplate({ user: _.pick(user, 'name', 'connected') }));
   };
   var presenceSessionDisconnected = function(event) {
     // TODO: if this was unintentional, attempt reconnect
     log.info('Presence session disconnected');
+
+    // Reflect connectedness in UI
+    userInfoEl.html(userInfoTemplate({ user: _.pick(user, 'name', 'connected') }));
   };
 
   // User List management
@@ -115,9 +121,11 @@
     connectForm = $('#connect-form');
     connectFormButton = $('#connect-form-btn');
     buddyList = $('#buddy-list');
+    userInfoEl = $('#user-info');
 
     // Populate Templates
     userListTemplate = _.template($('#tpl-user-list').html());
+    userInfoTemplate = _.template($('#tpl-user-info').html());
 
     // DOM initialization
     connectModal.modal('show');
