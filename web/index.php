@@ -37,6 +37,9 @@ $app->configureMode('development', function () use ($config) {
 
 $config->load(array('opentok'), true);
 
+// Constants
+define('NAME_MAX_LENGTH', '100');
+
 /* ------------------------------------------------------------------------------------------------
  * OpenTok Initialization
  * -----------------------------------------------------------------------------------------------*/
@@ -66,7 +69,13 @@ $app->get('/', function () use ($app, $config) {
 // response is given.
 // NOTE: Uniqueness of names is not enforced.
 $app->post('/user', function () use ($app, $opentok, $config) {
-    // TODO: parameter validation
+    // Parameter validation
+    $name = $app->request->params('name');
+    if (empty($name) || strlen($name) > intval(NAME_MAX_LENGTH)) {
+        $app->response->setStatus(400);
+        return;
+    }
+
     $token = $opentok->generateToken($config->opentok('presenceSession'), array(
         'data' => json_encode(array( 'name' => $app->request->params('name') ))
     ));
@@ -123,11 +132,14 @@ $app->post('/chats', function () use ($app, $opentok) {
 // resource. The response would then contain the `chatSessionId` and an appropriate token (invitee 
 // or inviter) based on user authentication.
 $app->get('/chats', function () use ($app, $opentok) {
+    // Parameter validation
     $chatSessionId = $app->request->params('chatSessionId');
     if (empty($chatSessionId)) {
        $app->response->setStatus(404); 
        return;
     }
+
+    // An exception can be generated if the chatSessionId was an arbitrary string
     try {
         $inviteeToken = $opentok->generateToken($chatSessionId);
     } catch (\OpenTok\Exception\InvalidArgumentException $e) {

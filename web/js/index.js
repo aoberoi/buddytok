@@ -2,7 +2,7 @@
  * BuddyTok
  * ----------------------------------------------------------------------------------------------*/
 // Explicitly declare dependencies and prevent leaking into global scope
-(function(window, document, $, _, OT, otConfig, log, undefined) {
+(function(window, document, $, _, OT, otConfig, constConfig, log, undefined) {
 
   // Application state
   var user = {}; // Properties: 'connected', 'status', 'token', 'name'
@@ -43,8 +43,7 @@
 
     // Validation
     // TODO: remove error message when new value has begun to be typed
-    // TODO: check for max length
-    if (name.length === 0) {
+    if (name.length === 0 || name.length > constConfig.NAME_MAX_LENGTH) {
       connectFormUsername.parents('.form-group').addClass('has-error');
       return errorHandler();
     }
@@ -148,4 +147,4 @@
     init();
   });
 
-}(window, document, jQuery, _, OT, opentokConfig, log));
+}(window, document, jQuery, _, OT, opentokConfig, constConfig, log));
