@@ -31,6 +31,9 @@
 
 {% block content %}
 
+<div class="row invitation-info">
+</div>
+
 {# Connect Modal (initially hidden) #}
 <div class="modal fade" id="connect-modal" tabindex="-1" role="dialog" aria-labelledby="connect-modal-label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog">
@@ -87,10 +90,26 @@
 {# User Info template #}
 <script type="text/template" id="tpl-user-info">
   <% if (user.connected) { %>
-    Connected as <%- user.name %>
+    Connected as <strong><%- user.name %></strong>
   <% } else { %>
     Not Connected
   <% } %>
+</script>
+
+{# Send invitation template #}
+<script type="text/template" id="tpl-send-invite">
+  <div class="alert alert-info" role="alert">
+    <p class="pull-right"><button type="button" class="btn btn-danger invite-cancel">Cancel</button></p>
+    <p class="invite-message">Waiting for <strong><%- invitee.name %></strong> to accept your chat invitation</p>
+  </div>
+</script>
+
+{# Receive invitation template #}
+<script type="text/template" id="tpl-receive-invite">
+  <div class="alert alert-info" role="alert" data-chat-session-id="<%- chat.chatSessionId %>">
+    <p class="pull-right"><button type="button" class="btn btn-danger invite-decline">Decline</button> <button type="button" class="btn btn-success invite-accept">Accept</button></p>
+    <p class="invite-message"><strong><%- chat.inviter.name %></strong> has invited you to a chat</p>
+  </div>
 </script>
 
 {% endblock %}

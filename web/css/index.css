@@ -1,7 +1,5 @@
-#user-list .list-group-item-text {
+#user-list .list-group-item-text,
+.invite-message {
   line-height: 2.3;
 }
 
-#user-info {
-  font-weight: bold;
-}
