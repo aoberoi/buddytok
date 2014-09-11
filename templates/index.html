@@ -67,6 +67,12 @@
       </div>
     </div>
   </div>
+
+  {# Chat Placehoder #}
+  <div class="col-sm-8">
+    <div class="panel panel-default chat-panel" >
+    </div>
+  </div>
 </div>
 
 {# User List template #}
@@ -110,6 +116,27 @@
     <p class="pull-right"><button type="button" class="btn btn-danger invite-decline">Decline</button> <button type="button" class="btn btn-success invite-accept">Accept</button></p>
     <p class="invite-message"><strong><%- chat.inviter.name %></strong> has invited you to a chat</p>
   </div>
+</script>
+
+{# Chat Panel template #}
+{# 'chatting', 'subscriberName' #}
+<script type="text/template" id="tpl-chat-panel">
+  <% if (chatting) { %>
+    <div class="panel-heading">
+      <h3 class="panel-title">Chat with <%- subscriberName %></h3>
+    </div>
+    <div class="panel-body video-holder">
+      <div class="subscriber"></div>
+      <div class="publisher"></div>
+    </div>
+  <% } else { %>
+    <div class="panel-heading">
+      <h3 class="panel-title"></h3>
+    </div>
+    <div class="panel-body video-holder empty">
+      <p>Not chatting currently</p>
+    </div>
+  <% } %>
 </script>
 
 {% endblock %}

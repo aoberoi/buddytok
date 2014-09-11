@@ -15,13 +15,14 @@
   var presenceSession; // OpenTok Session
   var currentChat; // 'chatSessionId', 'inviterToken' | 'inviteeToken', 'invitee' | 'inviter' (ref to object stored in userList)
   var currentChatSession; // OpenTok Session
+  var publisher, subscriber;
   var invitedChats = {}; // invitedChats is a map from chatSessionId to chat objects (as seen in currentChat)
 
   // DOM references
-  var connectModalEl, connectFormEl, connectFormButtonEl, connectFormUsernameEl, userListEl, userInfoEl, invitationInfoEl;
+  var connectModalEl, connectFormEl, connectFormButtonEl, connectFormUsernameEl, userListEl, userInfoEl, invitationInfoEl, chatPanelEl;
 
   // Templates
-  var userListTemplate, userInfoTemplate, sendInviteTemplate, receiveInviteTemplate;
+  var userListTemplate, userInfoTemplate, sendInviteTemplate, receiveInviteTemplate, chatPanelTemplate;
 
   // Connect Form event handler
   var connectSubmission = function(event) {
@@ -352,20 +353,32 @@
         // TODO: surface an error
       }
     });
+    chatPanelEl.html(chatPanelTemplate({
+      chatting: true,
+      subscriberName: (currentChat.inviter || currentChat.invitee).name
+    }));
   };
   var chatSessionConnected = function(event) {
     log.info('Chat session connected');
+    publisher = currentChatSession.publish($('.publisher')[0], { insertMode: 'append' });
   };
   var chatSessionDisconnected = function(event) {
     log.info('Chat session disconnected');
     user.status = 'online';
-    // TODO: cleanup UI
+    currentChat = null;
+    currentChatSession = null;
+    chatPanelEl.html(chatPanelTemplate({ chatting: false }));
+    // TODO: allow invitations once again (this might be handled in status change method)
   };
   var chatStreamCreated = function(event) {
     log.info('Chat session stream created');
+    subscriber = currentChatSession.subscribe(event.stream, $('.subscriber')[0], { insertMode: 'append' });
   };
   var chatStreamDestroyed = function(event) {
     log.info('Chat session stream destroyed');
+    if (event.stream.streamId !== publisher.stream.streamId) {
+      endChat();
+    }
   };
   var chatConnectionCreated = function(event) {
     // If this user is an inviter, set the status to chatting (invitee did this when they accepted)
@@ -377,8 +390,12 @@
   var chatConnectionDestroyed = function(event) {
     // If the other participant leaves, the chat is done.
     if (event.connection.connectionId !== currentChatSession.connection.connectionId) {
-      currentChatSession.disconnect();
+      endChat();
     }
+  };
+  var endChat = function() {
+    // TODO: show UI to tell user that the other party left so the chat is over
+    currentChatSession.disconnect();
   };
 
   // Initialization function
@@ -391,12 +408,14 @@
     userListEl = $('#user-list');
     userInfoEl = $('#user-info');
     invitationInfoEl = $('.invitation-info');
+    chatPanelEl = $('.chat-panel');
 
     // Populate Templates
     userListTemplate = _.template($('#tpl-user-list').html());
     userInfoTemplate = _.template($('#tpl-user-info').html());
     sendInviteTemplate = _.template($('#tpl-send-invite').html());
     receiveInviteTemplate = _.template($('#tpl-receive-invite').html());
+    chatPanelTemplate = _.template($('#tpl-chat-panel').html());
 
     // DOM initialization
     connectModalEl.modal('show');
@@ -405,6 +424,7 @@
     });
     userListEl.html(userListTemplate({ users: userList }));
     userInfoEl.html(userInfoTemplate({ user: _.pick(user, 'name', 'connected') }));
+    chatPanelEl.html(chatPanelTemplate({ chatting: false }));
 
     // Initialize application state
     user.connected = false;
