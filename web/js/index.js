@@ -335,11 +335,8 @@
   };
 
   // Chat management
-  // TODO: publish and subscribe
   // TODO: UI: 'waiting for xxx to join'
-  // TODO: end chat
   var connectToChat = function() {
-    // TODO: draw UI for current chat
     currentChatSession = OT.initSession(otConfig.apiKey, currentChat.chatSessionId);
     currentChatSession.on('sessionConnected', chatSessionConnected);
     currentChatSession.on('sessionDisconnected', chatSessionDisconnected);
@@ -357,6 +354,7 @@
       chatting: true,
       subscriberName: (currentChat.inviter || currentChat.invitee).name
     }));
+    log.info('Chat panel rendered');
   };
   var chatSessionConnected = function(event) {
     log.info('Chat session connected');
