@@ -12,8 +12,10 @@
   // *  'invitePending' - cannot send any other invitations, but can still recieve them (inviter only)
   // *  'chatting' - cannot send nor recieve any invitation
   var userList = {}; // Map of connectionId : user, where user is an object with keys 'name', 'status'
-  var presenceSession;
-  var currentChat, currentChatSession, invitedChats = {}; // invitedChats is a map from chatSessionId to chat objects
+  var presenceSession; // OpenTok Session
+  var currentChat; // 'chatSessionId', 'inviterToken' | 'inviteeToken', 'invitee' | 'inviter' (ref to object stored in userList)
+  var currentChatSession; // OpenTok Session
+  var invitedChats = {}; // invitedChats is a map from chatSessionId to chat objects (as seen in currentChat)
 
   // DOM references
   var connectModalEl, connectFormEl, connectFormButtonEl, connectFormUsernameEl, userListEl, userInfoEl, invitationInfoEl;
@@ -424,7 +426,6 @@
     presenceSession.on('connectionCreated', userCameOnline);
     presenceSession.on('connectionDestroyed', userWentOffline);
     presenceSession.on('signal:chatInvite', inviteReceived);
-    // TODO
     presenceSession.on('signal:chatInviteCancel', inviteCancelled);
     presenceSession.on('signal:chatDecline', chatDeclined);
   };
