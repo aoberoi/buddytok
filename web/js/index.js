@@ -358,7 +358,7 @@
   };
   var chatSessionConnected = function(event) {
     log.info('Chat session connected');
-    publisher = currentChatSession.publish($('.publisher')[0], { insertMode: 'append' });
+    publisher = currentChatSession.publish($('.publisher')[0], { insertMode: 'append', width: '100%', height: '100%' });
   };
   var chatSessionDisconnected = function(event) {
     log.info('Chat session disconnected');
@@ -370,7 +370,7 @@
   };
   var chatStreamCreated = function(event) {
     log.info('Chat session stream created');
-    subscriber = currentChatSession.subscribe(event.stream, $('.subscriber')[0], { insertMode: 'append' });
+    subscriber = currentChatSession.subscribe(event.stream, $('.subscriber')[0], { insertMode: 'append', width: '100%', height: '100%' });
   };
   var chatStreamDestroyed = function(event) {
     log.info('Chat session stream destroyed');
