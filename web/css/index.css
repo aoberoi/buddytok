@@ -5,11 +5,12 @@
 
 .video-holder {
   position: relative;
-}
-
-.video-holder.empty {
   min-height: 40em;
 }
+
+/*.video-holder.empty {
+  min-height: 40em;
+}*/
 
 .subscriber,
 .publisher {
