@@ -77,7 +77,10 @@ $app->post('/user', function () use ($app, $opentok, $config) {
     }
 
     $token = $opentok->generateToken($config->opentok('presenceSession'), array(
-        'data' => json_encode(array( 'name' => $app->request->params('name') ))
+        'data' => json_encode(array( 
+            'name' => $app->request->params('name'),
+            'status' => 'online'
+        ))
     ));
     $responseData = array( 'token' => $token );
 

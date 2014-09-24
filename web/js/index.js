@@ -96,7 +96,8 @@
     // Result handling functions
     var successHandler = function() {
       log.info('Invitation signal sent');
-      user.status = 'invitePending';
+      //user.status = 'invitePending';
+      updateUserState('invitePending');
       invitationInfoEl.append(sendInviteTemplate({ invitee: invitee }));
       connectToChat();
       alwaysHandler();
@@ -165,7 +166,7 @@
         return;
       }
       cancelButtonEl.parents('.alert').remove();
-      user.status = 'online';
+      updateUserState('online');
     });
   };
   // Decline invite button handler
@@ -213,7 +214,7 @@
       $('invite-cancel').trigger('click');
     }
 
-    user.status = 'chatting';
+    updateUserState('chatting');
 
     connectToChat();
   };
@@ -284,11 +285,11 @@
   // Chat declined signal handler
   var chatDeclined = function(event) {
     log.info('Invitation to chat has been declined by user at connection ID:' + event.from.connectionId);
-    currentChatSession.disconnect();
+    endChat();
     // If the chat invite was declined quickly (like when the other user was not 'online' or
     // 'invitePending'), the currentChatSession never connected so the disconnect handler doesn't
     // set the status back to 'online'. Just to be certain, we set it back here too.
-    user.status = 'online';
+    updateUserState('online');
     $('.invite-cancel').parents('.alert').remove();
     currentChat = undefined;
   };
@@ -300,7 +301,7 @@
   var presenceSessionConnected = function(event) {
     log.info('Presence session connected');
     user.connected = true;
-    user.status = 'online';
+    updateUserState('online');
 
     // Reflect connectedness in UI
     userInfoEl.html(userInfoTemplate({ user: _.pick(user, 'name', 'connected') }));
@@ -309,7 +310,7 @@
     // TODO: if this was unintentional, attempt reconnect
     log.info('Presence session disconnected');
     user.connected = false;
-    user.status = 'disconnected';
+    updateUserState('disconnected');
 
     // Reflect connectedness in UI
     userInfoEl.html(userInfoTemplate({ user: _.pick(user, 'name', 'connected') }));
@@ -322,6 +323,18 @@
       userList[event.connection.connectionId] = JSON.parse(event.connection.data);
       log.info('User added to user list');
       log.info(userList);
+      var stateUpdateSignal = {
+        type: 'userState',
+        to: event.connection,
+        data: user.status
+      };
+      presenceSession.signal(stateUpdateSignal, function(err) {
+        if (err) {
+          // TODO error handling
+          log.error('Error sending current user state to new user', err.reason);
+          return;
+        }
+      });
     }
     userListEl.html(userListTemplate({ users: userList }));
   };
@@ -336,6 +349,7 @@
 
   // Chat management
   // TODO: UI: 'waiting for xxx to join'
+  // TODO: some console bug for undefined something when chat is rejected
   var connectToChat = function() {
     currentChatSession = OT.initSession(otConfig.apiKey, currentChat.chatSessionId);
     currentChatSession.on('sessionConnected', chatSessionConnected);
@@ -362,7 +376,7 @@
   };
   var chatSessionDisconnected = function(event) {
     log.info('Chat session disconnected');
-    user.status = 'online';
+    updateUserState('online');
     currentChat = null;
     currentChatSession = null;
     chatPanelEl.html(chatPanelTemplate({ chatting: false }));
@@ -380,8 +394,10 @@
   };
   var chatConnectionCreated = function(event) {
     // If this user is an inviter, set the status to chatting (invitee did this when they accepted)
-    if (currentChat.inviterToken !== undefined && event.connection.connectionId !== currentChatSession.connection.connectionId) {
-      user.status = 'chatting';
+    // NOTE: currentChat can be undefined if the chat invitation was declined before this handler
+    // was fired
+    if (currentChat && currentChat.inviterToken !== undefined && event.connection.connectionId !== currentChatSession.connection.connectionId) {
+      updateUserState('chatting');
       $('.invite-cancel').parents('.alert').remove();
     }
   };
@@ -394,6 +410,43 @@
   var endChat = function() {
     // TODO: show UI to tell user that the other party left so the chat is over
     currentChatSession.disconnect();
+  };
+
+
+  // User state management
+  var updateUserState = function(newState) {
+    if (newState !== user.status) {
+      log.info('Updating user state');
+      user.status = newState;
+      if (newState !== 'invitePending') {
+        var stateUpdateSignal = {
+          type: 'userState',
+          data: newState
+        };
+        presenceSession.signal(stateUpdateSignal, function(err) {
+          if (err) {
+            // TODO error handling
+            log.error('Error sending current user state to new user', err.reason);
+            return;
+          }
+        });
+      }
+    }
+  };
+  var userStateUpdated = function(event) {
+    var updatedUser = userList[event.from.connectionId];
+
+    // This condition might be false when the signal that triggers this handler comes in before the
+    // connectionCreated event which populates the userList array. In that case, the userList will
+    // be rendered by the latter event and its safe to assume that their status is the default
+    if (updatedUser) {
+      if (event.from !== presenceSession.connection && event.data !== updatedUser.status) {
+        log.info('User state update recieved');
+        updatedUser.status = event.data;
+        userList[event.from.connectionId] = updatedUser;
+        userListEl.html(userListTemplate({ users: userList }));
+      }
+    }
   };
 
   // Initialization function
@@ -426,6 +479,7 @@
 
     // Initialize application state
     user.connected = false;
+    // presence session isn't set up yet, so we cannot use the updateUserState function
     user.status = 'disconnected';
     presenceSession = OT.initSession(otConfig.apiKey, otConfig.presenceSessionId);
 
@@ -446,6 +500,7 @@
     presenceSession.on('signal:chatInvite', inviteReceived);
     presenceSession.on('signal:chatInviteCancel', inviteCancelled);
     presenceSession.on('signal:chatDecline', chatDeclined);
+    presenceSession.on('signal:userState', userStateUpdated);
   };
 
   // Once the DOM is ready we can initialize

@@ -80,9 +80,11 @@
   <% if (_.size(users) > 0) { %>
     <% _.forEach(users, function(user, connectionId) { %>
       <div class="list-group-item buddy">
-        <button type="button" class="btn btn-default pull-right invite-button" data-connection-id="<%- connectionId %>">
-          <span class="glyphicon glyphicon-facetime-video"></span>
-        </button>
+        <% if (user.status === 'online') { %>
+          <button type="button" class="btn btn-default pull-right invite-button" data-connection-id="<%- connectionId %>">
+            <span class="glyphicon glyphicon-facetime-video"></span>
+          </button>
+        <% } %>
         <p class="list-group-item-text buddy-name"><%- user.name %></p>
       </div>
     <% }); %>
