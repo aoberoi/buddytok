@@ -22,9 +22,10 @@
     },
 
     initialize: function(options) {
-      this.presenceSession = options.presenceSession;
-      this.presenceSession.on('sessionConnected', this.userConnected, this);
-      this.model = new User();
+      this.model = new User({}, {
+        presenceSession: options.presenceSession
+      });
+      this.listenTo(this.model, 'change:status', this.userStatusChanged);
       this.listenTo(this.model, 'invalid', this.validationFailed);
       this.listenTo(this.model, 'error', this.saveFailed);
       this.listenTo(this.model, 'sync', this.userSaved);
@@ -44,15 +45,16 @@
 
     userSaved: function() {
       log.info('ConnectModalView: userSaved');
-      this.presenceSession.connect(this.model.get('token'));
       // TODO: connection error handling
+      this.model.connect();
     },
 
-    userConnected: function(event) {
-      log.info('ConnectModalView: userConnected');
-      this.hide();
-      this.model.set('connectionId', this.presenceSession.connection.connectionId);
-      this.trigger('userConnected', this.model);
+    userStatusChanged: function(user, status) {
+      log.info('ConnectModalView: userStatusConnected');
+      if (status === 'online') {
+        this.hide();
+        this.trigger('userConnected', this.model);
+      }
     },
 
     validationFailed: function(user, errors) {
@@ -68,6 +70,7 @@
     saveFailed: function(user, xhr) {
       log.error('ConnectModalView: saveFailed');
       log.error(xhr);
+      // TODO: better error messaging
       alert('Server error, please try again later: ' + xhr.textStatus);
       this.enableInputs();
     },

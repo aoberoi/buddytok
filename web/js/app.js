@@ -7,6 +7,7 @@
            exports, doc,            // Environment
            $, OT, log,              // External libraries
            ConnectModalView,        // Application modules
+           UserInfoView,
            otConfig,                // Server config
            undefined                // Misc
          ) {
@@ -14,7 +15,6 @@
   // Application singleton references
 
   exports.me = null;
-    // should be a user: name, status, connected, token
     // should contain: chat, invitations
     //    chat should contain: inviter, invitee, session, publisher, subscriber
     //    invitations should be a collection of chats
@@ -30,9 +30,18 @@
       presenceSession: presenceSession
     });
     connectModalView.show();
+    connectModalView.on('userConnected', userConnected);
+  };
+
+  var userConnected = function(user) {
+    exports.me = user;
+    var userInfoView = new UserInfoView({
+      el: '#user-info',
+      model: user
+    });
   };
 
   // DOM ready
   $(doc).ready(init);
 
-}(window, window.document, jQuery, OT, log, ConnectModalView, opentokConfig));
+}(window, window.document, jQuery, OT, log, ConnectModalView, UserInfoView, opentokConfig));
