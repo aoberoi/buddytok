@@ -25,8 +25,11 @@
     log.setLevel('info');
   </script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
   <script src="//static.opentok.com/webrtc/v2.2/js/opentok.min.js"></script>
-  <script src="/js/index.js"></script>
+  <script src="/js/models/User.js"></script>
+  <script src="/js/views/ConnectModalView.js"></script>
+  <script src="/js/app.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -45,12 +48,12 @@
         <form role="form" id="connect-form">
           <div class="form-group">
             <label for="userName">Name</label>
-            <input type="text" class="form-control" id="connect-form-username" placeholder="Enter a name">
+            <input type="text" class="form-control" name="user[name]" placeholder="Enter a name">
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" id="connect-form-btn" data-loading-text="Connecting..." class="btn btn-primary">Connect</button>
+        <button type="button" id="connect-btn" data-loading-text="Connecting..." class="btn btn-primary">Connect</button>
       </div>
     </div>
   </div>

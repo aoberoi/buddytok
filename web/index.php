@@ -57,7 +57,7 @@ $app->get('/', function () use ($app, $config) {
 
 // User enters
 //
-// Request: (URL encoded)
+// Request: (JSON encoded)
 // *  `name`: A name for the user that will appear in the UI
 // 
 // Response: (JSON encoded)
@@ -68,9 +68,12 @@ $app->get('/', function () use ($app, $config) {
 // identity of the request should be verified (often times with session cookies) before a valid 
 // response is given.
 // NOTE: Uniqueness of names is not enforced.
-$app->post('/user', function () use ($app, $opentok, $config) {
+$app->post('/users', function () use ($app, $opentok, $config) {
+    $rawBody = $app->request->getBody();
+    $params = json_decode($rawBody);
+
     // Parameter validation
-    $name = $app->request->params('name');
+    $name = $params->name;
     if (empty($name) || strlen($name) > intval(NAME_MAX_LENGTH)) {
         $app->response->setStatus(400);
         return;
