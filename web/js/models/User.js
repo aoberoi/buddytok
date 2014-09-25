@@ -20,9 +20,6 @@
     },
 
     urlRoot: '/users',
-    // Typically the attribute specified by idAttribute should be set by the server after sync but
-    // in this case its set via the presenceSession
-    //idAttribute: 'connectionId',
 
     validate: function(attrs, options) {
       if (!attrs.name || attrs.name.length === 0) {
