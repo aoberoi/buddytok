@@ -8,6 +8,7 @@
            $, OT, log,              // External libraries
            ConnectModalView,        // Application modules
            UserInfoView,
+           BuddyListView,
            otConfig,                // Server config
            undefined                // Misc
          ) {
@@ -31,6 +32,12 @@
     });
     connectModalView.show();
     connectModalView.on('userConnected', userConnected);
+
+    var buddyListView = new BuddyListView({
+      el: '#user-list',
+      presenceSession: presenceSession
+    });
+    buddyListView.render();
   };
 
   var userConnected = function(user) {
@@ -41,7 +48,6 @@
     });
   };
 
-  // DOM ready
   $(doc).ready(init);
 
-}(window, window.document, jQuery, OT, log, ConnectModalView, UserInfoView, opentokConfig));
+}(window, window.document, jQuery, OT, log, ConnectModalView, UserInfoView, BuddyListView, opentokConfig));

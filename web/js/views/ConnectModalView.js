@@ -12,7 +12,7 @@
          ) {
 
 
-  var ConnectModalView = exports.ConnectModalView = Backbone.View.extend({
+  exports.ConnectModalView = Backbone.View.extend({
 
     events: {
       'shown.bs.modal': 'focusInput',

@@ -28,8 +28,10 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
   <script src="//static.opentok.com/webrtc/v2.2/js/opentok.min.js"></script>
   <script src="/js/models/User.js"></script>
+  <script src="/js/models/RemoteUser.js"></script>
   <script src="/js/views/ConnectModalView.js"></script>
   <script src="/js/views/UserInfoView.js"></script>
+  <script src="/js/views/BuddyListView.js"></script>
   <script src="/js/app.js"></script>
 {% endblock %}
 
@@ -82,10 +84,10 @@
 {# User List template #}
 <script type="text/template" id="tpl-user-list">
   <% if (_.size(users) > 0) { %>
-    <% _.forEach(users, function(user, connectionId) { %>
+    <% _.forEach(users, function(user, index) { %>
       <div class="list-group-item buddy">
-        <% if (user.status === 'online') { %>
-          <button type="button" class="btn btn-default pull-right invite-button" data-connection-id="<%- connectionId %>">
+        <% if (user.available) { %>
+          <button type="button" class="btn btn-default pull-right invite-button">
             <span class="glyphicon glyphicon-facetime-video"></span>
           </button>
         <% } %>
