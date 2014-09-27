@@ -15,7 +15,16 @@
     defaults: {
       incoming: false,
       invitee: null,
-      inviter: null
+      inviter: null,
+      sessionId: null
+    },
+
+    urlRoot: '/chats',
+
+    toSignal: function() {
+      return JSON.stringify({
+        sessionId: this.get('sessionId')
+      });
     }
 
   });

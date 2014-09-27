@@ -47,7 +47,11 @@
         dispatcher: App
       });
       App.userInfoView = new UserInfoView({ model: App.me });
-      App.buddyListView = new BuddyListView({ collection: App.buddyList });
+      App.buddyListView = new BuddyListView({
+        collection: App.buddyList,
+        // TODO: may be able to push signalling via dispatch to the BuddyList collection
+        dispatcher: App
+      });
       App.invitationListView = new InvitationListView({ collection: App.invitationList });
       $(doc).ready(App.domReady);
     },

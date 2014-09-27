@@ -29,21 +29,65 @@
       // TODO: grab a reference to the local user and make it the inviter
       // do i really ever need a reference to the local user? its not part of what has to be
       // rendered, can it just remain null?
+      // TODO: save the invitation (so that it gets a sessionId), when done sendInvitation
       log.info('InvitationList: inviteRemoteUser');
-      // TODO: save the invitation (so that it gets a sessionId), when done:
-      this.sendInvitation(invitation);
+      var self = this;
+      var outgoingInvitation = new Invitation({
+        incoming: false,
+        invitee: remoteUser
+      });
+      outgoingInvitation.save({}, {
+        success: function() {
+          self.add(outgoingInvitation);
+          self.sendInvitation(outgoingInvitation);
+        },
+        error: function() {
+          // TODO: error handling
+        }
+      });
     },
 
     sendInvitation: function(invitation) {
       // TODO: send invitation using signal
       // TODO: let dispatcher know that an outgoing invitation has been sent (so that local user
       // status can be updated)
+      var self = this;
+      var signal = {
+        type: 'invitation',
+        to: invitation.invitee.connection,
+        data: invitation.toSignal()
+      };
+      this.presenceSession.signal(signal, function(err) {
+        if (err) {
+          // TODO: error handling
+          log.error('InvitationList: sendInvitation failed', err);
+          self.remove(invitation);
+          return;
+        }
+        self.dispatcher.trigger('invitationSent', invitation);
+      });
     },
 
     receiveInvitation: function(event) {
       // TODO: instantiate Invitation and add it to self
       // TODO: query local user and do not add it to self if self is unavailable
       // if unavailable, decline it
+      var self = this;
+      this.dispatcher.once('userAvailability', function(available) {
+        if (available) {
+          self.dispatcher.once('remoteUser~'+event.from.connectionId, function(remoteUser) {
+            var incomingInvitation = new Invitation({
+              incoming: true,
+              inviter: remoteUser
+            });
+            self.add(incomingInvitation);
+          });
+          self.dispatcher.trigger('getRemoteUser~'+event.from.connectionId);
+        } else {
+          self.declineInvitation(event.from);
+        }
+      });
+      this.dispatcher.trigger('getUserAvailability');
     },
 
     cancelInvitation: function(index) {
@@ -75,7 +119,7 @@
       // *  chat view should create a chat based on this invitation
     },
 
-    declineInvitation: function(index) {
+    declineInvitation: function(/* index | connection */) {
       // TODO: find the invitation to be declined, if its not there warn, it might have been cancelled
       // TODO: send invitation declination using signal
       // TODO: remove the declined invitation from self
