@@ -7,17 +7,15 @@
            exports,                 // Environment
            Backbone, _, log,        // External libraries
                                     // Application modules
-                                    // Server config
-           undefined                // Misc
+           undefined
          ) {
 
   exports.UserInfoView = Backbone.View.extend({
 
-    initialize: function() {
-      if (!this.model) {
-        throw Error('User Info View must be initialized with a model');
-      }
+    tagName: 'p',
+    className: 'navbar-text',
 
+    initialize: function() {
       this.listenTo(this.model, 'change', this.render);
     },
 
@@ -25,10 +23,10 @@
     template: _.template($('#tpl-user-info').html()),
 
     render: function() {
+      log.info('UserInfoView: render');
       this.$el.html(this.template(this.model.attributes));
       return this;
-    }
-
+    },
   });
 
 }(window, Backbone, _, log));

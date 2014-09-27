@@ -48,11 +48,26 @@ $opentok = new OpenTok($config->opentok('key'), $config->opentok('secret'));
 /* ------------------------------------------------------------------------------------------------
  * Routing
  * -----------------------------------------------------------------------------------------------*/
+
+// Homepage
 $app->get('/', function () use ($app, $config) {
-    $app->render('index.html', array(
+    $app->render('index.html');
+});
+
+// Presence configuration
+// 
+// Response: (JSON encoded)
+// *  `apiKey`: The presence session API Key
+// *  `sessionId`: The presence session ID
+$app->get('/presence', function () use ($app, $config) {
+
+    $responseData = array(
         'apiKey' => $config->opentok('key'),
         'sessionId' => $config->opentok('presenceSession')
-    ));
+    );
+
+    $app->response->headers->set('Content-Type', 'application/json');
+    $app->response->setBody(json_encode($responseData));
 });
 
 // User enters

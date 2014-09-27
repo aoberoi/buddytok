@@ -6,48 +6,68 @@
 (function(
            exports, doc,            // Environment
            $, OT, log,              // External libraries
-           ConnectModalView,        // Application modules
+           LocalUser,               // Application modules
+           BuddyList,
            UserInfoView,
+           ConnectModalView,
            BuddyListView,
-           otConfig,                // Server config
-           undefined                // Misc
+           undefined
          ) {
 
-  // Application singleton references
+  var App = exports.App = {
 
-  exports.me = null;
-    // should contain: chat, invitations
-    //    chat should contain: inviter, invitee, session, publisher, subscriber
-    //    invitations should be a collection of chats
+    // Models
+    presenceSession: null,
+    me: null,
+    buddyList: null,
 
-  exports.buddyList = null;
-    // should be a collection or users (without their chats or invitations)
+    // Views
+    userInfoView: null,
+    connectModalView: null,
+    buddyListView: null,
 
-  var presenceSession = exports.presenceSession = OT.initSession(otConfig.apiKey, otConfig.presenceSessionId);
+    initialize: function() {
+      // Presence session initialization
+      App.once('presenceSessionReady', App.presenceSessionReady, this);
+      App.retrievePresenceConfig();
 
-  var init = function() {
-    var connectModalView = new ConnectModalView({
-      el: '#connect-modal',
-      presenceSession: presenceSession
-    });
-    connectModalView.show();
-    connectModalView.on('userConnected', userConnected);
+      // Model initialization
+      App.me = new LocalUser({}, { dispatcher: App });
+      App.buddyList = new BuddyList([], { dispatcher: App });
 
-    var buddyListView = new BuddyListView({
-      el: '#user-list',
-      presenceSession: presenceSession
-    });
-    buddyListView.render();
+      // View initialization
+      App.connectModalView = new ConnectModalView({
+        model: App.me,
+        el: $('#connect-modal'),
+        dispatcher: App
+      });
+      App.userInfoView = new UserInfoView({ model: App.me });
+      App.buddyListView = new BuddyListView({ collection: App.buddyList });
+      $(doc).ready(App.domReady);
+    },
+
+    retrievePresenceConfig: function() {
+      $.get('/presence')
+        .done(function(presenceConfig) {
+          log.info('App: presenceSessionReady');
+          App.presenceSession = OT.initSession(presenceConfig.apiKey, presenceConfig.sessionId);
+          App.trigger('presenceSessionReady', App.presenceSession);
+        })
+        .fail(function() {
+          // TODO: error handling, maybe a retry
+        });
+    },
+
+    domReady: function() {
+      log.info('App: domReady');
+      // NOTE: App.connectModalView is already in the DOM and does not need to be rendered
+      App.connectModalView.show();
+      App.userInfoView.render().$el.appendTo('.navbar-right');
+      App.buddyListView.render().$el.appendTo('.sidebar-left');
+    },
+
   };
+  _.extend(App, Backbone.Events);
+  App.initialize();
 
-  var userConnected = function(user) {
-    exports.me = user;
-    var userInfoView = new UserInfoView({
-      el: '#user-info',
-      model: user
-    });
-  };
-
-  $(doc).ready(init);
-
-}(window, window.document, jQuery, OT, log, ConnectModalView, UserInfoView, BuddyListView, opentokConfig));
+}(window, window.document, jQuery, OT, log, LocalUser, BuddyList, UserInfoView, ConnectModalView, BuddyListView));

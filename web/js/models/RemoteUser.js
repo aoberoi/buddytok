@@ -7,8 +7,7 @@
            exports,                 // Environment
            Backbone, _, log,        // External libraries
                                     // Application modules
-                                    // Server config
-           undefined                // Misc
+           undefined
          ) {
 
   exports.RemoteUser = Backbone.Model.extend({
@@ -20,10 +19,11 @@
       available: true
     },
 
-    // NOTE: choosing to describe the unavailable statuses leaves room for other types of
-    // unavailable statuses in the future (e.g. 'away')
-    // NOTE: 'offline' isn't valid because the remote user object would be destroyed
-    unavailableStatuses: ['unavailable'],
+    // NOTE: 'offline' isn't a status the remote user object would be removed
+    allStatuses: ['online', 'unavailable'],
+    // NOTE: explicitly stating the available statuses allows more 'available' or 'unavailable'
+    // statuses to be defined later
+    availableStatuses: ['online'],
 
     initialize: function(attrs, options) {
       if (!options.presenceSession) {
@@ -36,15 +36,20 @@
       }
       this.connection = options.connection;
 
+      var connectionData = JSON.parse(this.connection.data);
+      this.set('name', connectionData.name);
+
       this.presenceSession.on('signal:' + this.connection.connectionId + '~status', this.remoteStatusUpdated, this);
       this.on('change:status', this.statusChanged, this);
     },
 
     statusChanged: function(self, status) {
-      this.set('available', !_.include(this.unavailableStatuses, status));
+      log.info('RemoteUser: statusChanged', status);
+      this.set('available', _.include(this.availableStatuses, status));
     },
 
     remoteStatusUpdated: function(event) {
+      log.info('RemoteUser: remoteStatusUpdated', event);
       this.set('status', event.data);
     }
 

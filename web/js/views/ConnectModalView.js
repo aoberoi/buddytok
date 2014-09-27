@@ -7,8 +7,7 @@
            exports,                 // Environment
            Backbone, _, log,        // External libraries
                                     // Application modules
-                                    // Server config
-           undefined                // Misc
+           undefined
          ) {
 
 
@@ -22,20 +21,25 @@
     },
 
     initialize: function(options) {
-      this.model = new User({}, {
-        presenceSession: options.presenceSession
-      });
+      if (!options.dispatcher) {
+        log.error('ConnectModalView: initialize() cannot be called without a dispatcher');
+        return;
+      }
+      options.dispatcher.once('presenceSessionReady', this.presenceSessionReady, this);
+
       this.listenTo(this.model, 'change:status', this.userStatusChanged);
       this.listenTo(this.model, 'invalid', this.validationFailed);
       this.listenTo(this.model, 'error', this.saveFailed);
-      this.listenTo(this.model, 'sync', this.userSaved);
-      this.$form = this.$('#connect-form');
-      this.$connectButton = this.$('#connect-btn');
     },
 
     connect: function(event) {
       log.info('ConnectModalView: connect');
       event.preventDefault();
+
+      if (!this.presenceSession) {
+        log.warn('ConnectModalView: ignoring connect() because presenceSession is not initialized');
+        return;
+      }
 
       this.disableInputs();
       this.resetValidation();
@@ -43,17 +47,9 @@
       this.model.save(this.serializeForm());
     },
 
-    userSaved: function() {
-      log.info('ConnectModalView: userSaved');
-      // TODO: connection error handling
-      this.model.connect();
-    },
-
     userStatusChanged: function(user, status) {
-      log.info('ConnectModalView: userStatusConnected');
       if (status === 'online') {
         this.hide();
-        this.trigger('userConnected', this.model);
       }
     },
 
@@ -76,10 +72,17 @@
     },
 
     show: function() {
+      log.info('ConnectModalView: show');
+      // DOM queries
+      this.$form = this.$('#connect-form');
+      this.$connectButton = this.$('#connect-btn');
+
+      // Delegate to bootstrap plugin
       this.$el.modal('show');
     },
 
     hide: function() {
+      log.info('ConnectModalView: hide');
       this.$el.modal('hide');
     },
 
@@ -111,6 +114,15 @@
       var groups = this.$form.find('.has-error');
       groups.find('.help-block').remove();
       groups.removeClass('has-error');
+    },
+
+    presenceSessionReady: function(presenceSession) {
+      this.presenceSession = presenceSession;
+
+      // Now that a presence session exists, enable the form
+      // NOTE: show() must be called before this method
+      this.$connectButton.prop('disabled', false);
+      this.$connectButton.text('Connect');
     }
 
   });
