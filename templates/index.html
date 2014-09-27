@@ -16,16 +16,19 @@
   <script src="//static.opentok.com/webrtc/v2.2/js/opentok.min.js"></script>
   <script src="/js/models/LocalUser.js"></script>
   <script src="/js/models/RemoteUser.js"></script>
+  <script src="/js/models/Invitation.js"></script>
   <script src="/js/collections/BuddyList.js"></script>
+  <script src="/js/collections/InvitationList.js"></script>
   <script src="/js/views/UserInfoView.js"></script>
   <script src="/js/views/ConnectModalView.js"></script>
   <script src="/js/views/BuddyListView.js"></script>
+  <script src="/js/views/InvitationListView.js"></script>
   <script src="/js/app.js"></script>
 {% endblock %}
 
 {% block content %}
 
-<div class="row invitation-info">
+<div class="row row-top">
 </div>
 
 {# Connect Modal (initially hidden) #}
@@ -96,19 +99,19 @@
   <% } %>
 </script>
 
-{# Send invitation template #}
-<script type="text/template" id="tpl-send-invite">
+{# Outgoing invitation template #}
+<script type="text/template" id="tpl-outgoing-invite">
   <div class="alert alert-info" role="alert">
     <p class="pull-right"><button type="button" class="btn btn-danger invite-cancel">Cancel</button></p>
     <p class="invite-message">Waiting for <strong><%- invitee.name %></strong> to accept your chat invitation</p>
   </div>
 </script>
 
-{# Receive invitation template #}
-<script type="text/template" id="tpl-receive-invite">
-  <div class="alert alert-info" role="alert" data-chat-session-id="<%- chat.chatSessionId %>">
+{# Incoming invitation template #}
+<script type="text/template" id="tpl-incoming-invite">
+  <div class="alert alert-info" role="alert">
     <p class="pull-right"><button type="button" class="btn btn-danger invite-decline">Decline</button> <button type="button" class="btn btn-success invite-accept">Accept</button></p>
-    <p class="invite-message"><strong><%- chat.inviter.name %></strong> has invited you to a chat</p>
+    <p class="invite-message"><strong><%- inviter.name %></strong> has invited you to a chat</p>
   </div>
 </script>
 

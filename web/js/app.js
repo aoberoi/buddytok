@@ -8,9 +8,11 @@
            $, OT, log,              // External libraries
            LocalUser,               // Application modules
            BuddyList,
+           InvitationList,
            UserInfoView,
            ConnectModalView,
            BuddyListView,
+           InvitationListView,
            undefined
          ) {
 
@@ -20,11 +22,13 @@
     presenceSession: null,
     me: null,
     buddyList: null,
+    invitationList: null,
 
     // Views
     userInfoView: null,
     connectModalView: null,
     buddyListView: null,
+    invitationListView: null,
 
     initialize: function() {
       // Presence session initialization
@@ -34,6 +38,7 @@
       // Model initialization
       App.me = new LocalUser({}, { dispatcher: App });
       App.buddyList = new BuddyList([], { dispatcher: App });
+      App.invitationList = new InvitationList([], { dispatcher: App });
 
       // View initialization
       App.connectModalView = new ConnectModalView({
@@ -43,6 +48,7 @@
       });
       App.userInfoView = new UserInfoView({ model: App.me });
       App.buddyListView = new BuddyListView({ collection: App.buddyList });
+      App.invitationListView = new InvitationListView({ collection: App.invitationList });
       $(doc).ready(App.domReady);
     },
 
@@ -64,10 +70,11 @@
       App.connectModalView.show();
       App.userInfoView.render().$el.appendTo('.navbar-right');
       App.buddyListView.render().$el.appendTo('.sidebar-left');
+      App.invitationListView.render().$el.appendTo('.row-top');
     },
 
   };
   _.extend(App, Backbone.Events);
   App.initialize();
 
-}(window, window.document, jQuery, OT, log, LocalUser, BuddyList, UserInfoView, ConnectModalView, BuddyListView));
+}(window, window.document, jQuery, OT, log, LocalUser, BuddyList, InvitationList, UserInfoView, ConnectModalView, BuddyListView, InvitationListView));

@@ -7,7 +7,7 @@
            exports,                 // Environment
            Backbone, _, log,        // External libraries
                                     // Application modules
-           undefined                // Misc
+           undefined
          ) {
 
   exports.LocalUser = Backbone.Model.extend({
@@ -96,6 +96,9 @@
       log.info('LocalUser: statusChanged', status);
       // compute derived properties that are based on status
       this.set('connected', _.include(this.connectedStatuses, status));
+
+      // TODO: let the dispatcher know whether user is available or not
+      // buddy list will need to know so that its ui can be disabled or not
     },
 
     // TODO: send new connections my own status

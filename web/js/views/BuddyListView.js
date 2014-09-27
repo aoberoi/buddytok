@@ -7,15 +7,24 @@
            exports,                 // Environment
            Backbone, _, log,        // External libraries
                                     // Application modules
-                                    // Server config
-           undefined                // Misc
+           undefined
          ) {
 
   exports.BuddyListView = Backbone.View.extend({
 
     className: 'panel panel-default',
 
+    events: {
+      'click .invite-button': 'inviteButtonClicked'
+    },
+
     initialize: function(options) {
+      if (!options.dispatcher) {
+        log.error('BuddyListView: initialize() cannot be called without a dispatcher');
+        return;
+      }
+      this.dispatcher = options.dispatcher;
+
       this.listenTo(this.collection, 'add remove change:available', this.render);
     },
 
@@ -27,6 +36,12 @@
         users: this.collection.toJSON()
       }));
       return this;
+    },
+
+    inviteButtonClicked: function(event) {
+      // TODO: find index
+      var remoteUser = this.collection.at(index);
+      this.dispatcher.trigger('inviteRemoteUser', remoteUser);
     }
 
   });
