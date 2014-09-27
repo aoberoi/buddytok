@@ -39,7 +39,7 @@
     },
 
     inviteButtonClicked: function(event) {
-      // TODO: find index
+      var index = this.$('.invite-button').index(event.currentTarget);
       var remoteUser = this.collection.at(index);
       this.dispatcher.trigger('inviteRemoteUser', remoteUser);
     }

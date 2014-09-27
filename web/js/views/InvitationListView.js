@@ -43,18 +43,18 @@
     },
 
     inviteAccept: function(event) {
-      // TODO: figure out index
       log.info('InvitationListView: inviteAccept');
+      var index = this.$('.invite-accept').index(event.currentTarget);
       this.collection.acceptInvitation(index);
     },
     inviteDecline: function(event) {
-      // TODO: figure out index
       log.info('InvitationListView: inviteDecline');
+      var index = this.$('.invite-decline').index(event.currentTarget);
       this.collection.declineInvitation(index);
     },
     inviteCancel: function(event) {
-      // TODO: figure out index
       log.info('InvitationListView: inviteCancel');
+      var index = this.$('.invite-cancel').index(event.currentTarget);
       this.collection.cancelInvitation(index);
     },
 

@@ -22,7 +22,6 @@
       this.dispatcher = options.dispatcher;
       this.dispatcher.once('presenceSessionReady', this.presenceSessionReady, this);
       this.dispatcher.on('inviteRemoteUser', this.inviteRemoteUser, this);
-
     },
 
     inviteRemoteUser: function(remoteUser) {
