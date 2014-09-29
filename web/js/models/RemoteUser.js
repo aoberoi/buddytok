@@ -52,7 +52,6 @@
       log.info('RemoteUser: remoteStatusUpdated', event);
       this.set('status', event.data);
     }
-
   });
 
 }(window, Backbone, _, log));

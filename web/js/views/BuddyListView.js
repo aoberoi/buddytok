@@ -47,6 +47,10 @@
     inviteButtonClicked: function(event) {
       var index = this.$('.buddy').index($(event.currentTarget).parents('.buddy'));
       var remoteUser = this.collection.at(index);
+      if (index === -1 || !remoteUser) {
+        log.warn('BuddyListView: inviteButtonClicked remote user not found');
+        return;
+      }
       this.dispatcher.trigger('inviteRemoteUser', remoteUser);
     },
 
