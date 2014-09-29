@@ -54,7 +54,7 @@
 </div>
 
 <div class="row">
-  {# User List Placeholder #}
+  {# Buddy List Placeholder #}
   <div class="col-sm-4 sidebar-left">
   </div>
 
@@ -65,7 +65,7 @@
   </div>
 </div>
 
-{# User List template #}
+{# Buddy List template #}
 <script type="text/template" id="tpl-buddy-list">
   <div class="panel-heading">
     <h3 class="panel-title">Buddies</h3>
@@ -101,7 +101,7 @@
 
 {# Outgoing invitation template #}
 <script type="text/template" id="tpl-outgoing-invite">
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info invitation" role="alert">
     <p class="pull-right"><button type="button" class="btn btn-danger invite-cancel">Cancel</button></p>
     <p class="invite-message">Waiting for <strong><%- invitee.name %></strong> to accept your chat invitation</p>
   </div>
@@ -109,7 +109,7 @@
 
 {# Incoming invitation template #}
 <script type="text/template" id="tpl-incoming-invite">
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info invitation" role="alert">
     <p class="pull-right"><button type="button" class="btn btn-danger invite-decline">Decline</button> <button type="button" class="btn btn-success invite-accept">Accept</button></p>
     <p class="invite-message"><strong><%- inviter.name %></strong> has invited you to a chat</p>
   </div>

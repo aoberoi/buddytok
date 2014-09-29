@@ -5,7 +5,7 @@
 // Declare dependencies and prevent leaking into global scope
 (function(
            exports,                 // Environment
-           Backbone, _, log,        // External libraries
+           $, Backbone, _, log,     // External libraries
                                     // Application modules
            undefined
          ) {
@@ -24,8 +24,11 @@
         return;
       }
       this.dispatcher = options.dispatcher;
+      this.dispatcher.on('userAvailability', this.userAvailabilityChanged, this);
 
       this.listenTo(this.collection, 'add remove change:available', this.render);
+
+      this.allowedToInvite = true;
     },
 
     // TODO: eliminate global DOM query
@@ -35,15 +38,23 @@
       this.$el.html(this.template({
         users: this.collection.toJSON()
       }));
+      if (!this.allowedToInvite) {
+        this.$('.invite-button').prop('disabled', true);
+      }
       return this;
     },
 
     inviteButtonClicked: function(event) {
-      var index = this.$('.invite-button').index(event.currentTarget);
+      var index = this.$('.buddy').index($(event.currentTarget).parents('.buddy'));
       var remoteUser = this.collection.at(index);
       this.dispatcher.trigger('inviteRemoteUser', remoteUser);
+    },
+
+    userAvailabilityChanged: function(isAvailable) {
+      this.allowedToInvite = isAvailable;
+      this.render();
     }
 
   });
 
-}(window, Backbone, _, log));
+}(window, jQuery, Backbone, _, log));

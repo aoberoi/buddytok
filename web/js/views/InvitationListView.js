@@ -5,7 +5,7 @@
 // Declare dependencies and prevent leaking into global scope
 (function(
            exports,                 // Environment
-           Backbone, _, log,        // External libraries
+           $, Backbone, _, log,     // External libraries
                                     // Application modules
            undefined
          ) {
@@ -36,7 +36,8 @@
       this.$el.empty();
       this.collection.each(function(invitation) {
         var template = invitation.get('incoming') ? self.incomingTemplate : self.outgoingTemplate;
-        this.$el.append(template(invitation.attributes));
+        var invitationData = JSON.parse(JSON.stringify(invitation));
+        self.$el.append(template(invitationData));
       });
 
       return this;
@@ -44,20 +45,20 @@
 
     inviteAccept: function(event) {
       log.info('InvitationListView: inviteAccept');
-      var index = this.$('.invite-accept').index(event.currentTarget);
+      var index = this.$('.invitation').index($(event.currentTarget).parents('.invitation'));
       this.collection.acceptInvitation(index);
     },
     inviteDecline: function(event) {
       log.info('InvitationListView: inviteDecline');
-      var index = this.$('.invite-decline').index(event.currentTarget);
+      var index = this.$('.invitation').index($(event.currentTarget).parents('.invitation'));
       this.collection.declineInvitation(index);
     },
     inviteCancel: function(event) {
       log.info('InvitationListView: inviteCancel');
-      var index = this.$('.invite-cancel').index(event.currentTarget);
+      var index = this.$('.invitation').index($(event.currentTarget).parents('.invitation'));
       this.collection.cancelInvitation(index);
     },
 
   });
 
-}(window, Backbone, _, log));
+}(window, jQuery, Backbone, _, log));

@@ -31,14 +31,20 @@
 
     initialize: function(attrs, options) {
       if (!options.dispatcher) {
-        log.error('ConnectModalView: initialize() cannot be called without a dispatcher');
+        log.error('LocalUser: initialize() cannot be called without a dispatcher');
         return;
       }
-      options.dispatcher.once('presenceSessionReady', this.presenceSessionReady, this);
+      this.dispatcher = options.dispatcher;
+      this.dispatcher.once('presenceSessionReady', this.presenceSessionReady, this);
+      this.dispatcher.on('getUserAvailability', this.getUserAvailability, this);
+      this.dispatcher.on('invitationSent', this.invitationSent, this);
+      this.dispatcher.on('invitationCancelled', this.invitationCancelled, this);
+      this.dispatcher.on('invitationAccepted', this.invitationAccepted, this);
+      this.dispatcher.on('invitationDeclined', this.invitationDeclined, this);
 
       this.on('change:status', this.statusChanged, this);
-      this.on('change:status', this.sendRemoteStatus, this);
       this.once('sync', this.connect, this);
+
     },
 
     validate: function(attrs, options) {
@@ -63,6 +69,7 @@
       this.presenceSession = presenceSession;
       this.presenceSession.on('sessionConnected', this.connected, this);
       this.presenceSession.on('sessionDisconnected', this.disconnected, this);
+      this.presenceSession.on('connectionCreated', this.connectionCreated, this);
     },
 
     connect: function() {
@@ -92,17 +99,22 @@
       this.set('status', 'offline');
     },
 
+    connectionCreated: function(event) {
+      if (event.connection !== this.presenceSession.connection) {
+        this.sendRemoteStatus(this.get('status'), event.connection);
+      }
+    },
+
     statusChanged: function(self, status) {
       log.info('LocalUser: statusChanged', status);
       // compute derived properties that are based on status
       this.set('connected', _.include(this.connectedStatuses, status));
 
-      // TODO: let the dispatcher know whether user is available or not
-      // buddy list will need to know so that its ui can be disabled or not
+      this.getUserAvailability();
+      this.sendRemoteStatus(status);
     },
 
-    // TODO: send new connections my own status
-    sendRemoteStatus: function(self, status) {
+    sendRemoteStatus: function(status, connection) {
       log.info('LocalUser: sendRemoteStatus');
       // an 'offline' status update is sent to remote users as a connectionDestroyed
       if (status === 'offline') {
@@ -116,8 +128,36 @@
       } else {
         signal.data = 'unavailable';
       }
+      if (connection) {
+        signal.to = connection;
+      }
       // TODO: handle errors via completion
       this.presenceSession.signal(signal);
+    },
+
+    getUserAvailability: function() {
+      log.info('LocalUser: getUserAvailability');
+      var self = this;
+      var triggerUserAvailability = function() {
+        self.dispatcher.trigger('userAvailability', _.include(self.availableStatuses, self.get('status')));
+      };
+      setTimeout(triggerUserAvailability, 0);
+    },
+
+    invitationSent: function() {
+      this.set('status', 'outgoingInvitePending');
+    },
+
+    invitationCancelled: function () {
+      this.set('status', 'online');
+    },
+
+    invitationAccepted: function () {
+      this.set('status', 'chatting');
+    },
+
+    invitationDeclined: function () {
+      this.set('status', 'online');
     }
   });
 

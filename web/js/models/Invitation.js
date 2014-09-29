@@ -21,10 +21,19 @@
 
     urlRoot: '/chats',
 
+    parse: function(response, options) {
+      var copy = _.clone(this.attributes);
+      return _.extend(copy, response);
+    },
+
     toSignal: function() {
       return JSON.stringify({
         sessionId: this.get('sessionId')
       });
+    },
+
+    fromSignal: function(signalData) {
+      this.set(JSON.parse(signalData));
     }
 
   });

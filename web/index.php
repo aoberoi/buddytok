@@ -13,7 +13,6 @@ use \Slim\Views\Twig;
 use \OpenTok\OpenTok;
 use \werx\Config\Providers\ArrayProvider;
 use \werx\Config\Container;
-use \Memcached;
 
 /* ------------------------------------------------------------------------------------------------
  * Slim Application Initialization
@@ -107,13 +106,13 @@ $app->post('/users', function () use ($app, $opentok, $config) {
 
 // Create a chat
 //
-// Request: (URL encoded)
+// Request: (JSON encoded)
 // *  `invitee`: the name of the other user who is being invited to the chat
 //
 // Response: (JSON encoded)
-// *  `chatSessionId`: an OpenTok session ID to conduct the chat within
-// *  `inviterToken`: a token that the creator of the chat (or inviter) can use to connect to the 
-//    `chatSessionId`
+// *  `sessionId`: an OpenTok session ID to conduct the chat within
+// *  `token`: a token that the creator of the chat (or inviter) can use to connect to the chat 
+//    session
 // 
 // NOTE: This request is designed in a manner that would make it convenient to add user 
 // authentication in the future. The `invitee` field is not currently used but could be used to help 
@@ -125,8 +124,8 @@ $app->post('/chats', function () use ($app, $opentok) {
     // NOTE: Uses a relayed session. If a routed session is preferred, add that parameter here.
     $chatSession = $opentok->createSession();
     $responseData = array(
-        'chatSessionId' => $chatSession->getSessionId(),
-        'inviterToken' => $chatSession->generateToken()
+        'sessionId' => $chatSession->getSessionId(),
+        'token' => $chatSession->generateToken()
     );
 
     $app->response->headers->set('Content-Type', 'application/json');
@@ -137,13 +136,13 @@ $app->post('/chats', function () use ($app, $opentok) {
 // Join a chat
 //
 // Request: (query parameter)
-// *  `chatSessionId`: the OpenTok session ID which corresponds to the chat an invitee is attempting 
+// *  `sessionId`: the OpenTok session ID which corresponds to the chat an invitee is attempting 
 //    to enter
 // 
 // Response: (JSON encoded)
-// *  `chatSessionId`: an OpenTok session ID to conduct the chat within
-// *  `inviteeToken`: a token that the user joining (or invitee) a chat can use to connect to the 
-//    `chatSessionId`
+// *  `sessionId`: an OpenTok session ID to conduct the chat within
+// *  `token`: a token that the user joining (or invitee) a chat can use to connect to the chat 
+//    session
 //
 // NOTE: This request is designed in a manner that would make it convenient to add user 
 // authentication in the future. Using the query parameter `chatSessionId` is like using a filter on 
@@ -153,22 +152,22 @@ $app->post('/chats', function () use ($app, $opentok) {
 // or inviter) based on user authentication.
 $app->get('/chats', function () use ($app, $opentok) {
     // Parameter validation
-    $chatSessionId = $app->request->params('chatSessionId');
-    if (empty($chatSessionId)) {
+    $sessionId = $app->request->params('sessionId');
+    if (empty($sessionId)) {
        $app->response->setStatus(404); 
        return;
     }
 
     // An exception can be generated if the chatSessionId was an arbitrary string
     try {
-        $inviteeToken = $opentok->generateToken($chatSessionId);
+        $token = $opentok->generateToken($sessionId);
     } catch (\OpenTok\Exception\InvalidArgumentException $e) {
         $app->response->setStatus(404);
         return;
     }
     $responseData = array(
-        'chatSessionId' => $chatSessionId,
-        'inviteeToken' => $inviteeToken
+        'sessionId' => $sessionId,
+        'token' => $token
     );
 
     $app->response->headers->set('Content-Type', 'application/json');

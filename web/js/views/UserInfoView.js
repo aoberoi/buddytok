@@ -5,7 +5,7 @@
 // Declare dependencies and prevent leaking into global scope
 (function(
            exports,                 // Environment
-           Backbone, _, log,        // External libraries
+           $, Backbone, _, log,     // External libraries
                                     // Application modules
            undefined
          ) {
@@ -29,4 +29,4 @@
     },
   });
 
-}(window, Backbone, _, log));
+}(window, jQuery, Backbone, _, log));
