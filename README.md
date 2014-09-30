@@ -70,9 +70,9 @@ components such as buttons and modals.
 ### Concepts
 
 Each user needs to be aware of the state of each of the other users -- this is known as _presence_.
-This application approach this from a distributed point of view, which means there is no central
-authority required so there's less overhead in storing each user's state. The implementation
-requires a basic messaging channel where each user or the whole group can be addressed. OpenTok
+This application approaches this from a distributed point of view, which means there is no central
+authority required and there's less overhead in storing each user's state. The implementation
+requires a basic messaging channel where each user and the whole group can be addressed. OpenTok
 includes that exact functionality for clients via the signaling API. This application uses a
 **presence session**, a global session which every client connects to in order to communicate
 presence information. No video streaming is done in this session.
@@ -80,18 +80,20 @@ presence information. No video streaming is done in this session.
 Each client uses the presence session to build a list of the other users and keep it synchronized
 as users' states change. A **remote user** is the representation of another user and its state.
 This list of remote users is called the **buddies list**. When a user joins the app (adding a user
-name), that client sends a signal to the session with details about the user. Each other user stores
-the remote user's data and state.
+name), that client sends a signal to the presence session with details about the user. Each other
+user stores the remote user's data and state.
 
 A **local user** is the user who is using the application on the local browser.
 
-Each users state changes based on chat invitations and ongoing chat sessions. For example, the user's state may be unavailable, outgoingInvitePending, or chatting. The application uses the
-state of each remote user to conduct one-to-one chats. These chats begin as an
-**invitation** from one user to another. The client who is creating the invitation is in charge of
-creating the new chat by requesting it from the server. The server uses the OpenTok PHP library to
-create a new OpenTok session for the video streaming of the chat. The **chat** contains the
-OpenTok session ID, API Key, and token for the user. When the invitation is accepted, the invited
-user requests the same chat from the server, and the server response will contain the same chat information but with a unique token. Once both parties have this chat, they connect to it and
+Each users state changes based on chat invitations and ongoing chat sessions. For example, the
+user's state may be unavailable, outgoingInvitePending, or chatting. The application uses the
+state of each remote user, the presence information, to conduct one-to-one chats. These chats begin
+as an **invitation** from one user to another. The client who is creating the invitation is in
+charge of creating the new chat by requesting it from the server. The server uses the OpenTok PHP 
+library to create a new OpenTok session for the video streaming of the chat. The **chat** contains
+the OpenTok session ID, API Key, and token for the user. When the invitation is accepted, the
+invited user requests the same chat from the server, and the server response will contain the same
+chat information but with a unique token. Once both parties have this chat, they connect to it and
 publish and subscribe to audio-video streams, much like the Hello World sample.
 
 ### Server
@@ -112,7 +114,7 @@ in the Slim application and is individually described below:
    in adding authentication for the user, you would do so in this handler.
 
 *  `POST /chats` -- When a user chooses to invite another user to a chat, it receives its the chat's
-   representation from this handler. In this handler, the OpenTok SDK is used to create a new
+   representation from this handler. In this handler, the OpenTok PHP library is used to create a new
    session and return its ID along with the API key and a token. The token is unique for each
    participant in the chat. Since there is no authentication in this application, there is no
    opportunity to perform authorization in the chat. If there was, you could use this handler to
@@ -143,7 +145,7 @@ This file exports a global variable `App`, which contains properties for the vie
 creates.
 
 
-#### ConnectModalView (web/js/views/ConnectModalView.js)
+### ConnectModalView (web/js/views/ConnectModalView.js)
 
 The ConnectModalView is responsible for gathering the user details required to connect to the
 presence session, and for connecting to the presence session.
