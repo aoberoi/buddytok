@@ -41,6 +41,7 @@
       this.dispatcher.on('invitationCancelled', this.invitationCancelled, this);
       this.dispatcher.on('invitationAccepted', this.invitationAccepted, this);
       this.dispatcher.on('invitationDeclined', this.invitationDeclined, this);
+      this.dispatcher.on('chatEnded', this.chatEnded, this);
 
       this.on('change:status', this.statusChanged, this);
       this.once('sync', this.connect, this);
@@ -148,15 +149,19 @@
       this.set('status', 'outgoingInvitePending');
     },
 
-    invitationCancelled: function () {
+    invitationCancelled: function() {
       this.set('status', 'online');
     },
 
-    invitationAccepted: function () {
+    invitationAccepted: function() {
       this.set('status', 'chatting');
     },
 
-    invitationDeclined: function () {
+    invitationDeclined: function() {
+      this.set('status', 'online');
+    },
+
+    chatEnded: function() {
       this.set('status', 'online');
     }
   });

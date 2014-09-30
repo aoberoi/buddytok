@@ -110,6 +110,7 @@ $app->post('/users', function () use ($app, $opentok, $config) {
 // *  `invitee`: the name of the other user who is being invited to the chat
 //
 // Response: (JSON encoded)
+// *  `apiKey`: an OpenTok API key that owns the session ID
 // *  `sessionId`: an OpenTok session ID to conduct the chat within
 // *  `token`: a token that the creator of the chat (or inviter) can use to connect to the chat 
 //    session
@@ -120,10 +121,11 @@ $app->post('/users', function () use ($app, $opentok, $config) {
 // be to hand both the `inviterToken` and `inviteeToken` to the inviter, who could then send the 
 // invitee a token over an OpenTok signal. The drawback of that design would be that the server 
 // loses the ability to keep track of the state of a user (such as if they have joined a chat or not).
-$app->post('/chats', function () use ($app, $opentok) {
+$app->post('/chats', function () use ($app, $opentok, $config) {
     // NOTE: Uses a relayed session. If a routed session is preferred, add that parameter here.
     $chatSession = $opentok->createSession();
     $responseData = array(
+        'apiKey' => $config->opentok('key'),
         'sessionId' => $chatSession->getSessionId(),
         'token' => $chatSession->generateToken()
     );
@@ -140,6 +142,7 @@ $app->post('/chats', function () use ($app, $opentok) {
 //    to enter
 // 
 // Response: (JSON encoded)
+// *  `apiKey`: an OpenTok API key that owns the session ID
 // *  `sessionId`: an OpenTok session ID to conduct the chat within
 // *  `token`: a token that the user joining (or invitee) a chat can use to connect to the chat 
 //    session
@@ -150,7 +153,7 @@ $app->post('/chats', function () use ($app, $opentok) {
 // some time, each one could be given an independent URI. The invitee would then GET that specific 
 // resource. The response would then contain the `chatSessionId` and an appropriate token (invitee 
 // or inviter) based on user authentication.
-$app->get('/chats', function () use ($app, $opentok) {
+$app->get('/chats', function () use ($app, $opentok, $config) {
     // Parameter validation
     $sessionId = $app->request->params('sessionId');
     if (empty($sessionId)) {
@@ -166,6 +169,7 @@ $app->get('/chats', function () use ($app, $opentok) {
         return;
     }
     $responseData = array(
+        'apiKey' => $config->opentok('key'),
         'sessionId' => $sessionId,
         'token' => $token
     );

@@ -13,6 +13,7 @@
            ConnectModalView,
            BuddyListView,
            InvitationListView,
+           ChatView,
            undefined
          ) {
 
@@ -29,6 +30,7 @@
     connectModalView: null,
     buddyListView: null,
     invitationListView: null,
+    chatView: null,
 
     initialize: function() {
       // Presence session initialization
@@ -52,6 +54,10 @@
         dispatcher: App
       });
       App.invitationListView = new InvitationListView({ collection: App.invitationList });
+      App.chatView = new ChatView({
+        dispatcher: App,
+        localUser: App.me
+      });
       $(doc).ready(App.domReady);
     },
 
@@ -74,10 +80,12 @@
       App.userInfoView.render().$el.appendTo('.navbar-right');
       App.buddyListView.render().$el.appendTo('.sidebar-left');
       App.invitationListView.render().$el.appendTo('.row-top');
+      App.chatView.render().$el.appendTo('.content-right');
     },
 
   };
   _.extend(App, Backbone.Events);
   App.initialize();
 
-}(window, window.document, jQuery, OT, log, LocalUser, BuddyList, InvitationList, UserInfoView, ConnectModalView, BuddyListView, InvitationListView));
+}(window, window.document, jQuery, OT, log, LocalUser, BuddyList, InvitationList, UserInfoView,
+  ConnectModalView, BuddyListView, InvitationListView, ChatView));
