@@ -38,7 +38,6 @@
       this.dispatcher.on('invitationAccepted', this.invitationAccepted, this);
     },
 
-    // TODO: eliminate global DOM query
     template: _.template($('#tpl-chat').html()),
 
     render: function() {
@@ -48,11 +47,13 @@
     },
 
     invitationAccepted: function(invitation) {
+
       // Create a chat based on this invitation, and store it as the model for this view
       this.model = new Chat({}, {
         localUser: this.localUser,
         invitation: invitation
       });
+
       // The DOM elements required for the chat should appear on the page
       this.render();
       this.model.on('started', this.chatStarted, this);

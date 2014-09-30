@@ -21,7 +21,6 @@
       this.listenTo(this.model, 'change', this.render);
     },
 
-    // TODO: eliminate global DOM query
     template: _.template($('#tpl-user-info').html()),
 
     render: function() {

@@ -52,12 +52,14 @@
     },
 
     getRemoteUser: function(connection) {
-      var self = this;
+      var self = this,
+          remoteUser,
+          triggerRemoteUser;
       log.info('BuddyList: getRemoteUser');
-      var remoteUser = this.find(function(user) {
+      remoteUser = this.find(function(user) {
         return user.connection === connection;
       });
-      var triggerRemoteUser = function() {
+      triggerRemoteUser = function() {
         self.dispatcher.trigger('remoteUser~' + connection.connectionId, remoteUser);
       };
       if (remoteUser) {
@@ -76,15 +78,18 @@
 
     // OPENTOK-17314 workaround for status updates
     signalReceived: function(event) {
-      var self = this;
-      var separatedType = event.type.split('~');
+      var self = this,
+          separatedType = event.type.split('~'),
+          remoteUser,
+          queuedStatusUpdate;
+
       if (separatedType.length === 2 && separatedType[1] === 'status') {
         // This is a status update signal
-        var remoteUser = this.find(function(r) { return r.connection === event.from; });
+        remoteUser = this.find(function(r) { return r.connection === event.from; });
         if (!remoteUser) {
           // We don't yet have a RemoteUser instance for this user, so we should queue a function
           // that does the status update
-          var queuedStatusUpdate = function queuedStatusUpdate(addedUser) {
+          queuedStatusUpdate = function queuedStatusUpdate(addedUser) {
             if (addedUser.connection === event.from) {
               addedUser.set('status', event.data);
               self.off('add', queuedStatusUpdate);

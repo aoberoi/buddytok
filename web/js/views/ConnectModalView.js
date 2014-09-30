@@ -66,15 +66,14 @@
     },
 
     saveFailed: function(user, xhr) {
-      log.error('ConnectModalView: saveFailed');
-      log.error(xhr);
-      // TODO: better error messaging
+      log.error('ConnectModalView: saveFailed', xhr);
       alert('Server error, please try again later: ' + xhr.textStatus);
       this.enableInputs();
     },
 
     show: function() {
       log.info('ConnectModalView: show');
+
       // DOM queries
       this.$form = this.$('#connect-form');
       this.$connectButton = this.$('#connect-btn');

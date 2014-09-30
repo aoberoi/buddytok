@@ -26,15 +26,12 @@
       this.listenTo(this.collection, 'add remove', this.render);
     },
 
-    // TODO: eliminate global DOM query
     incomingTemplate: _.template($('#tpl-incoming-invite').html()),
     outgoingTemplate: _.template($('#tpl-outgoing-invite').html()),
 
     render: function() {
       var self = this;
 
-      // TODO: could be optimized by constructing a new detached DOM element and swapping it in once
-      // at the end
       this.$el.empty();
       this.collection.each(function(invitation) {
         var template = invitation.get('incoming') ? self.incomingTemplate : self.outgoingTemplate;
@@ -50,11 +47,13 @@
       var index = this.$('.invitation').index($(event.currentTarget).parents('.invitation'));
       this.collection.acceptInvitation(index);
     },
+
     inviteDecline: function(event) {
       log.info('InvitationListView: inviteDecline');
       var index = this.$('.invitation').index($(event.currentTarget).parents('.invitation'));
       this.collection.declineInvitation(index);
     },
+
     inviteCancel: function(event) {
       log.info('InvitationListView: inviteCancel');
       var index = this.$('.invitation').index($(event.currentTarget).parents('.invitation'));

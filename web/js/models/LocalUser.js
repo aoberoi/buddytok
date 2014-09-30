@@ -1,7 +1,7 @@
 /* -----------------------------------------------------------------------------------------------
  * Local User Model
  * ----------------------------------------------------------------------------------------------*/
-/* global Backbone, _, log */
+/* global Backbone, _, log, alert */
 /* exported LocalUser */
 
 // Declare dependencies and prevent leaking into global scope
@@ -24,6 +24,7 @@
     },
 
     allStatuses: ['online', 'offline', 'outgoingInvitePending', 'chatting'],
+
     // Statuses where the Remote User representation of this user will appear invitable
     availableStatuses: ['online'],
 
@@ -47,7 +48,6 @@
 
       this.on('change:status', this.statusChanged, this);
       this.once('sync', this.connect, this);
-
     },
 
     validate: function(attrs) {
@@ -81,8 +81,12 @@
         log.error('LocalUser: connect() cannot be invoked when there is no presenceSession set');
         return;
       }
-      // TODO: connection error handling
-      this.presenceSession.connect(this.get('token'));
+      this.presenceSession.connect(this.get('token'), function(err) {
+        if (err) {
+          log.error('LocalUser: connect was not successful', err);
+          alert('Could not connect to presence session. Try reloading the page.');
+        }
+      });
     },
 
     disconnect: function() {
@@ -110,6 +114,7 @@
 
     statusChanged: function(self, status) {
       log.info('LocalUser: statusChanged', status);
+
       // compute derived properties that are based on status
       this.set('connected', _.include(this.connectedStatuses, status));
 
@@ -118,12 +123,14 @@
     },
 
     sendRemoteStatus: function(status, connection) {
+      var signal;
       log.info('LocalUser: sendRemoteStatus');
+
       // an 'offline' status update is sent to remote users as a connectionDestroyed
       if (status === 'offline') {
         return;
       }
-      var signal = {
+      signal = {
         type: this.presenceSession.connection.connectionId + '~status'
       };
       if (_.include(this.availableStatuses, status)) {
@@ -134,14 +141,20 @@
       if (connection) {
         signal.to = connection;
       }
-      // TODO: handle errors via completion
-      this.presenceSession.signal(signal);
+      this.presenceSession.signal(signal, function(err) {
+        if (err) {
+          log.error('LocalUser: sendRemoteStatus was not successful', err);
+          alert('Could not send user status to other users.');
+        }
+      });
     },
 
     getUserAvailability: function() {
+      var self = this,
+          triggerUserAvailability;
       log.info('LocalUser: getUserAvailability');
-      var self = this;
-      var triggerUserAvailability = function() {
+
+      triggerUserAvailability = function() {
         self.dispatcher.trigger('userAvailability',
                                 _.include(self.availableStatuses, self.get('status')));
       };

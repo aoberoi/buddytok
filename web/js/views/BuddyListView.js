@@ -33,7 +33,6 @@
       this.allowedToInvite = true;
     },
 
-    // TODO: eliminate global DOM query
     template: _.template($('#tpl-buddy-list').html()),
 
     render: function() {
@@ -47,8 +46,11 @@
     },
 
     inviteButtonClicked: function(event) {
-      var index = this.$('.buddy').index($(event.currentTarget).parents('.buddy'));
-      var remoteUser = this.collection.at(index);
+      var index,
+          remoteUser;
+
+      index = this.$('.buddy').index($(event.currentTarget).parents('.buddy'));
+      remoteUser = this.collection.at(index);
       if (index === -1 || !remoteUser) {
         log.warn('BuddyListView: inviteButtonClicked remote user not found');
         return;

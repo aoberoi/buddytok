@@ -23,6 +23,7 @@
 
     // NOTE: 'offline' isn't a status the remote user object would be removed
     allStatuses: ['online', 'unavailable'],
+
     // NOTE: explicitly stating the available statuses allows more 'available' or 'unavailable'
     // statuses to be defined later
     availableStatuses: ['online'],

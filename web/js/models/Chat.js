@@ -37,10 +37,11 @@
     },
 
     start: function(publisherEl, subscriberEl) {
+      var self = this,
+          _start;
       log.info('Chat: start');
-      var self = this;
 
-      var _start = function () {
+      _start = function () {
         self.subscriberEl = subscriberEl;
 
         self.session = OT.initSession(self.invitation.get('apiKey'),

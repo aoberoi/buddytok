@@ -1,7 +1,7 @@
 /* -----------------------------------------------------------------------------------------------
  * BuddyTok Application
  * ----------------------------------------------------------------------------------------------*/
-/* global jQuery, _, OT, Backbone, log */
+/* global jQuery, _, OT, Backbone, log, alert */
 /* global LocalUser, BuddyList, InvitationList, UserInfoView, ConnectModalView, BuddyListView */
 /* global InvitationListView, ChatView */
 
@@ -71,8 +71,9 @@
           App.presenceSession = OT.initSession(presenceConfig.apiKey, presenceConfig.sessionId);
           App.trigger('presenceSessionReady', App.presenceSession);
         })
-        .fail(function() {
-          // TODO: error handling, maybe a retry
+        .fail(function(jqXHR, responseText, errorThrown) {
+          log.error('App: presenceSessionReady failed', errorThrown);
+          alert('Could not retreive the presence configuration. Please try again later');
         });
     },
 
