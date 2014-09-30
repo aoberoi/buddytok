@@ -9,7 +9,6 @@ require_once __DIR__.'/../vendor/autoload.php';
  * Class Imports
  * -----------------------------------------------------------------------------------------------*/
 use \Slim\Slim;
-use \Slim\Views\Twig;
 use \OpenTok\OpenTok;
 use \werx\Config\Providers\ArrayProvider;
 use \werx\Config\Container;
@@ -18,9 +17,7 @@ use \werx\Config\Container;
  * Slim Application Initialization
  * -----------------------------------------------------------------------------------------------*/
 $app = new Slim(array(
-    'log.enabled' => true,
-    'templates.path' => '../templates',
-    'view' => new Twig()
+    'log.enabled' => true
 ));
 
 /* ------------------------------------------------------------------------------------------------
@@ -47,11 +44,6 @@ $opentok = new OpenTok($config->opentok('key'), $config->opentok('secret'));
 /* ------------------------------------------------------------------------------------------------
  * Routing
  * -----------------------------------------------------------------------------------------------*/
-
-// Homepage
-$app->get('/', function () use ($app, $config) {
-    $app->render('index.html');
-});
 
 // Presence configuration
 // 
@@ -117,7 +109,7 @@ $app->post('/users', function () use ($app, $opentok, $config) {
 // 
 // NOTE: This request is designed in a manner that would make it convenient to add user 
 // authentication in the future. The `invitee` field is not currently used but could be used to help 
-// verify that a user who attempts to join a chat is allowed to do so. An alternative design could 
+// verify that a user who attempts to create a chat is allowed to do so. An alternative design could 
 // be to hand both the `inviterToken` and `inviteeToken` to the inviter, who could then send the 
 // invitee a token over an OpenTok signal. The drawback of that design would be that the server 
 // loses the ability to keep track of the state of a user (such as if they have joined a chat or not).
@@ -148,11 +140,11 @@ $app->post('/chats', function () use ($app, $opentok, $config) {
 //    session
 //
 // NOTE: This request is designed in a manner that would make it convenient to add user 
-// authentication in the future. Using the query parameter `chatSessionId` is like using a filter on 
-// the `/chats` resource to find the appropriate chat. Alternatively, if new chats were stored for 
-// some time, each one could be given an independent URI. The invitee would then GET that specific 
-// resource. The response would then contain the `chatSessionId` and an appropriate token (invitee 
-// or inviter) based on user authentication.
+// authentication in the future. The query parameter `sessionId` is like a filter on  the `/chats`
+// resource to find the appropriate chat. Alternatively, if new chats were stored for  some time,
+// each one could be given an independent URI. The invitee would then GET that specific resource.
+// The response would then contain the `sessionId` and an appropriate token (invitee or inviter)
+// based on user authentication.
 $app->get('/chats', function () use ($app, $opentok, $config) {
     // Parameter validation
     $sessionId = $app->request->params('sessionId');
@@ -161,7 +153,7 @@ $app->get('/chats', function () use ($app, $opentok, $config) {
        return;
     }
 
-    // An exception can be generated if the chatSessionId was an arbitrary string
+    // An exception can be generated if the sessionId was an arbitrary string
     try {
         $token = $opentok->generateToken($sessionId);
     } catch (\OpenTok\Exception\InvalidArgumentException $e) {
