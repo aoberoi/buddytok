@@ -145,7 +145,7 @@ This file exports a global variable `App`, which contains properties for the vie
 creates.
 
 
-### ConnectModalView (web/js/views/ConnectModalView.js)
+#### ConnectModalView (web/js/views/ConnectModalView.js)
 
 The ConnectModalView is responsible for gathering the user details required to connect to the
 presence session, and for connecting to the presence session.
@@ -159,7 +159,7 @@ user connects to the presence session, which causes the local user's status to c
 modal observes the status changing to 'online', it is dismissed.
 
 
-### LocalUser (web/js/models/LocalUser.js)
+#### LocalUser (web/js/models/LocalUser.js)
 
 The LocalUser's responsibilities are: 
 *  Storing and managing state about the local user.
