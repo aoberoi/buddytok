@@ -1,6 +1,8 @@
 /* -----------------------------------------------------------------------------------------------
  * Local User Model
  * ----------------------------------------------------------------------------------------------*/
+/* global Backbone, _, log */
+/* exported LocalUser */
 
 // Declare dependencies and prevent leaking into global scope
 (function(
@@ -48,7 +50,7 @@
 
     },
 
-    validate: function(attrs, options) {
+    validate: function(attrs) {
       log.info('LocalUser: validate');
       if (!attrs.name || attrs.name.length === 0) {
         return [{
@@ -60,7 +62,7 @@
       if (attrs.name.length > this.NAME_MAX_LENGTH) {
         return [{
           attribute: 'name',
-          reason: 'User name must be shorter than ' + constConfig.NAME_MAX_LENGTH +
+          reason: 'User name must be shorter than ' + this.NAME_MAX_LENGTH +
                   ' characters'
         }];
       }
@@ -92,11 +94,11 @@
       this.presenceSession.disconnect();
     },
 
-    connected: function(event) {
+    connected: function() {
       this.set('status', 'online');
     },
 
-    disconnected: function(event) {
+    disconnected: function() {
       this.set('status', 'offline');
     },
 
@@ -140,7 +142,8 @@
       log.info('LocalUser: getUserAvailability');
       var self = this;
       var triggerUserAvailability = function() {
-        self.dispatcher.trigger('userAvailability', _.include(self.availableStatuses, self.get('status')));
+        self.dispatcher.trigger('userAvailability',
+                                _.include(self.availableStatuses, self.get('status')));
       };
       setTimeout(triggerUserAvailability, 0);
     },
@@ -168,6 +171,7 @@
 
   // NOTE: Because of how Backbone creates prototypes, there is no way to refer to the allStatuses
   // property inside the call to extend(). The prototype only exists after that call completes.
-  exports.LocalUser.prototype.connectedStatuses = _.without(LocalUser.prototype.allStatuses, 'offline');
+  exports.LocalUser.prototype.connectedStatuses = _.without(exports.LocalUser.prototype.allStatuses,
+                                                            'offline');
 
 }(window, Backbone, _, log));

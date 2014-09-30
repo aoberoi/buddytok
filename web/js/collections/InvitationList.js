@@ -1,11 +1,14 @@
 /* -----------------------------------------------------------------------------------------------
  * Invitation List Collection
  * ----------------------------------------------------------------------------------------------*/
+/* global OT, Backbone, _, log */
+/* global Invitation */
+/* exported InvitationList */
 
 // Declare dependencies and prevent leaking into global scope
 (function(
            exports,                 // Environment
-           Backbone, _, log,        // External libraries
+           OT, Backbone, _, log,    // External libraries
            Invitation,              // Application modules
            undefined
          ) {
@@ -219,7 +222,9 @@
         invitation = this.at(arguments[0]);
       } else if (arguments[0] instanceof OT.Connection) {
         // Lookup the invitation by connection
-        invitation = this.find(function(i) { return i.get('remoteUser').connection === arguments[0]; });
+        invitation = this.find(function(i) {
+          return i.get('remoteUser').connection === arguments[0];
+        });
       }
       // If the invitation wasn't found (e.g. there was a race where the remote user cancelled it
       // before this method was called) there's no action necessary, just log it.
@@ -278,4 +283,4 @@
 
   });
 
-}(window, Backbone, _, log, Invitation));
+}(window, OT, Backbone, _, log, Invitation));

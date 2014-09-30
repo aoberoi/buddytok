@@ -1,6 +1,8 @@
 /* -----------------------------------------------------------------------------------------------
  * Invitation List View
  * ----------------------------------------------------------------------------------------------*/
+/* global jQuery, Backbone, _, log */
+/* exported InvitationListView */
 
 // Declare dependencies and prevent leaking into global scope
 (function(
@@ -20,7 +22,7 @@
       'click .invite-cancel': 'inviteCancel'
     },
 
-    initialize: function(options) {
+    initialize: function() {
       this.listenTo(this.collection, 'add remove', this.render);
     },
 

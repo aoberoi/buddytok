@@ -1,6 +1,8 @@
 /* -----------------------------------------------------------------------------------------------
  * Remote User Model
  * ----------------------------------------------------------------------------------------------*/
+/* global Backbone, _, log */
+/* exported RemoteUser */
 
 // Declare dependencies and prevent leaking into global scope
 (function(
@@ -39,7 +41,9 @@
       var connectionData = JSON.parse(this.connection.data);
       this.set('name', connectionData.name);
 
-      this.presenceSession.on('signal:' + this.connection.connectionId + '~status', this.remoteStatusUpdated, this);
+      this.presenceSession.on('signal:' + this.connection.connectionId + '~status',
+                              this.remoteStatusUpdated,
+                              this);
       this.on('change:status', this.statusChanged, this);
     },
 

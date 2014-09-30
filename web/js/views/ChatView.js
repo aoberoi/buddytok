@@ -1,6 +1,9 @@
 /* -----------------------------------------------------------------------------------------------
  * Chat View
  * ----------------------------------------------------------------------------------------------*/
+/* global jQuery, Backbone, _, log */
+/* global Chat */
+/* exported ChatView */
 
 // Declare dependencies and prevent leaking into global scope
 (function(

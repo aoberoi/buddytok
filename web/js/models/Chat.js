@@ -1,6 +1,8 @@
 /* -----------------------------------------------------------------------------------------------
  * Chat Model
  * ----------------------------------------------------------------------------------------------*/
+/* global OT, Backbone, _, log */
+/* exported Chat */
 
 // Declare dependencies and prevent leaking into global scope
 (function(
@@ -41,7 +43,8 @@
       var _start = function () {
         self.subscriberEl = subscriberEl;
 
-        self.session = OT.initSession(self.invitation.get('apiKey'), self.invitation.get('sessionId'));
+        self.session = OT.initSession(self.invitation.get('apiKey'),
+                                      self.invitation.get('sessionId'));
         self.session.on('sessionConnected', self.sessionConnected, self)
                     .on('sessionDisconnected', self.sessionDisconnected, self)
                     .on('streamCreated', self.streamCreated, self)
@@ -63,12 +66,12 @@
       this.session.disconnect();
     },
 
-    sessionConnected: function(event) {
+    sessionConnected: function() {
       log.info('Chat: sessionConnected');
       this.session.publish(this.publisher);
     },
 
-    sessionDisconnected: function(event) {
+    sessionDisconnected: function() {
       log.info('Chat: sessionDisconnected');
       this.invitation.off(null, null, this);
       this.session.off();
@@ -81,7 +84,9 @@
 
     streamCreated: function(event) {
       log.info('Chat: streamCreated');
-      this.subscriber = this.session.subscribe(event.stream, this.subscriberEl, this.videoProperties);
+      this.subscriber = this.session.subscribe(event.stream,
+                                               this.subscriberEl,
+                                               this.videoProperties);
       this.trigger('subscriberJoined');
     },
 

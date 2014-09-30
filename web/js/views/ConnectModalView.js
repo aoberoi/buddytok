@@ -1,6 +1,8 @@
 /* -----------------------------------------------------------------------------------------------
  * Connect Modal View
  * ----------------------------------------------------------------------------------------------*/
+/* global Backbone, _, log, alert */
+/* exported ConnectModalView */
 
 // Declare dependencies and prevent leaking into global scope
 (function(

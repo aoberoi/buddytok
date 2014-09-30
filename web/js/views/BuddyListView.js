@@ -1,6 +1,8 @@
 /* -----------------------------------------------------------------------------------------------
  * Buddy List View
  * ----------------------------------------------------------------------------------------------*/
+/* global jQuery, Backbone, _, log */
+/* exported BuddyListView */
 
 // Declare dependencies and prevent leaking into global scope
 (function(

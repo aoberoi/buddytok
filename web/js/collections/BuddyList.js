@@ -1,6 +1,9 @@
 /* -----------------------------------------------------------------------------------------------
  * Buddy List Collection
  * ----------------------------------------------------------------------------------------------*/
+/* global Backbone, _, log */
+/* global RemoteUser */
+/* exported BuddyList */
 
 // Declare dependencies and prevent leaking into global scope
 (function(

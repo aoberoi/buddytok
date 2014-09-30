@@ -1,6 +1,8 @@
 /* -----------------------------------------------------------------------------------------------
  * User Info View
  * ----------------------------------------------------------------------------------------------*/
+/* global jQuery, Backbone, _, log */
+/* exported UserInfoView */
 
 // Declare dependencies and prevent leaking into global scope
 (function(

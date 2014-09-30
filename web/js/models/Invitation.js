@@ -1,6 +1,8 @@
 /* -----------------------------------------------------------------------------------------------
  * Invitation Model
  * ----------------------------------------------------------------------------------------------*/
+/* global jQuery, Backbone, _, log */
+/* exported Invitation */
 
 // Declare dependencies and prevent leaking into global scope
 (function(
@@ -22,7 +24,7 @@
 
     urlRoot: '/chats',
 
-    parse: function(response, options) {
+    parse: function(response) {
       var copy = _.clone(this.attributes);
       return _.extend(copy, response);
     },
