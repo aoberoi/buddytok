@@ -165,6 +165,15 @@ sending the data to the server. Once the server responds with the presence sessi
 user connects to the presence session, which causes the local user's status to change. When the
 modal observes the status changing to 'online', it is dismissed.
 
+
+### Local User (web/js/models/LocalUser.js)
+
+The Local User's main responsibilities are: 
+*  storing and managing state about the user who is connecting to the application
+*  requesting presence session details from the server and validating
+*  updating other users with its state via the presence session
+*  notify and allow other objects to query for its state
+
 ## Requirements
 
 *  PHP 5.3 or greater
