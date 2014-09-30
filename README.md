@@ -79,18 +79,19 @@ The presence session helps each client build a list of the other users of the ap
 it syncrhonized as those users' state changes. A **remote user** is the representation of another
 user and its state. This list of remote users is called the **buddy list**.
 
-A **local user** is the user who using the application at an individual client. While a the remote
-user representation of a user may only expose what is essential for all the other clients to know
-in order to service the rest of the application, the local user may have more details.  One example
-is that a user who has invited another user to a chat and is waiting for the invitation to be
-accepted and a user who is actively chatting both appear identital in their remote user
-representation on other clients: unavailable.
+A **local user** is the user who is using the application at an individual client. While a remote
+user representation of a user may only expose what is essential for all the other clients to
+know in order to service the rest of the application, the local user representation of the same
+user may have more details. One example is a user who has invited another user to a chat and is
+waiting for the invitation to be accepted and a user who is actively chatting both appear identital
+in their remote user representation on other clients (unavailable) while being in two different
+states in their local user representation (outgoingInvitePending and chatting, respectively).
 
 With the state of each remote user visible in the buddy list, the actual service that the rest of
-the application uses that information for is to conduct one-to-one chats. These chats start off
-as an **invitation** from one user to another. At the time an invitation is created, another OpenTok
-session needs to be created for the video streaming of the chat. The client who is creating the
-invitation is in charge of creating the new chat by requesting it from the server. The **chat**
+the application uses that information for is to conduct one-to-one chats. These chats begin as an
+**invitation** from one user to another. The client who is creating the invitation is in charge of
+creating the new chat by requesting it from the server. At the time an invitation is created,
+another OpenTok session needs to be created for the video streaming of the chat. The **chat**
 contains the OpenTok session ID, API Key, and token for a user that is communicating with another
 user. Once the invitation is accepted, the invited user must also request the same chat from the
 server, and the server response will contain the same chat information but with a unique token.
@@ -99,7 +100,38 @@ functions much like the Hello World sample.
 
 ### Server
 
+The server responds in a RESTful manner to a few different paths. Each path is given its own handler
+in the Slim application and is individually described below:
 
+*  `GET /presence` -- The server returns the API key and the session ID for the presence session as
+   a JSON encoded response. Notably, the token is not generated. 
+
+*  `POST /users` -- In order for a user to connect to the presence session, they must post the
+   required details about themselves to this endpoint. In this case, the required details just
+   include a JSON encoded `name`. Its in this handler that the token is generated because the server
+   uses OpenTok token's connection data feature to store the name of the user in the token. The
+   distinction between the name and the other state (which is sent over the presence session) is
+   that the name never changes, so its ideal for storing in the connection data. Also, note that the
+   token is given the role `Role::SUBSRCIBER`. This is because no users are allowed to publish into
+   the presence session nor are there any streams to subscribe to. If you were interested in adding
+   authentication and starting a session for the user, this would be the right handler to create the
+   session within.
+
+*  `POST /chats` -- When a user chooses to invite another user to a chat, it recieves its the chat's
+   representation from this handler. In this handler, the OpenTok SDK is used to create a new
+   session, and return its ID and the details required to connect to it (API key and token). The
+   token is unique and not shared between both participants of the chat. Since there is no
+   authentication in this application, there is no opportunity to perform authorization for the
+   chat. If there was, this handler would be the right place to create a record for the chat in
+   a database and then when the invited user were to request the chat data authorization could be
+   performed to make sure the requesting user is the invited user for that chat.
+
+*  `GET /chats?sessionId=[sessionId]` -- When the invited user accepts an invitation, it also needs
+   the details required to connect to the chat. Since there is no authentication in this
+   application, and there are no database records for each chat that is created, the invited user is
+   expected to know the sessionId of the chat they want to join already and send it as a query
+   string parameter. The handler then returns the same details required to connect to the chat
+   (session ID, API Key, token) but with another unique token.
 
 ### Client
 
