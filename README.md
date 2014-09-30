@@ -144,7 +144,6 @@ This is the main starting point for the application. Its main responsibilities a
 This file exports a global variable `App`, which contains properties for the views and models it
 creates.
 
-
 #### ConnectModalView (web/js/views/ConnectModalView.js)
 
 The ConnectModalView is responsible for gathering the user details required to connect to the
@@ -158,14 +157,61 @@ sending the data to the server. Once the server responds with the presence sessi
 user connects to the presence session, which causes the local user's status to change. When the
 modal observes the status changing to 'online', it is dismissed.
 
-
 #### LocalUser (web/js/models/LocalUser.js)
 
 The LocalUser's responsibilities are: 
+
 *  Storing and managing state about the local user.
 *  Requesting presence session details from the server and validating.
 *  Updating other users with its state via the presence session.
 *  Notifying and allowing other objects to query for its state.
+
+#### UserInfoVIew (web/js/views/UserInfo.js)
+
+The UserInfoView is also backed by the local user model. It is a simple view that is positioned in
+the right side of the header. It displays the user's name when connected and "Not connected"
+otherwise.
+
+#### BuddyList (web/js/collections/BuddyList.js)
+
+The BuddyList in a collection of RemoteUser model objects. Its responsibility is to encapsulate
+creation and deletion of remote users by receiving signals from the presence session. It also
+notifies other objects when the availability of a remote user changes.
+
+#### RemoteUser (web/js/models/RemoteUser.js)
+
+The RemoteUser is a model that stores and manages the state of a remote user by receiving signals
+from the presence session. It notifies other objects when the remote user's status changes.
+
+#### BuddyListView (web/js/views/BuddyListView.js)
+
+The BuddyListView handles presenting the data in the BuddyList collection. This includes enabling
+and disabling the UI as the status of remote users and the local user changes. It also handles user
+input when the camera icon button is pressed by notifying other objects that an invitation should be
+created.
+
+#### InvitationList (web/js/collections/InvitationList.js)
+
+The InvitationList is a collection of Invitation model objects. Its responsibility is to encapsulate
+the invitation flow and rules regarding how to handle incoming and outgoing invitations. It uses the
+presence session to send and recieve invitations with signaling.
+
+#### Invitation (web/js/models/Invitation.js)
+
+The Invitation is a model that represents either an incoming or an outgoing invitation. Each
+invitaiton has a remote user associated with it. This class encapsulates requesting chat data from
+the server and allows other objects to query for that data.
+
+#### ChatView (web/js/views/ChatView.js)
+
+The ChatView handles presenting a chat once an invitation has been sent and accepted. It is backed
+by a Chat model and listens for events from it to adapt the UI accordingly.
+
+#### Chat (web/js/models/Chat.js)
+
+The Chat model encapsulates the logic used to conduct a video chat including an OpenTok session and
+its event handlers. It is created with a reference to the invitation which caused it to be created,
+and uses it to read the information needed to connect (API key, session ID, and token).
 
 ## Requirements
 

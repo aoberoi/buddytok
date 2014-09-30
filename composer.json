@@ -1,7 +1,15 @@
 {
-    "name": "opentok/buddytok",
+    "name": "opentok/buddytok-php",
     "description": "An example OpenTok 1to1 application with Presence",
     "license": "MIT",
+    "keywords": [
+      "OpenTok",
+      "WebRTC",
+      "video",
+      "presence",
+      "realtime"
+    ],
+    "homepage": "https://tokbox.com/opentok/starter-kits",
     "authors": [
         {
             "name": "Ankur Oberoi",
