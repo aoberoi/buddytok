@@ -135,6 +135,19 @@ in the Slim application and is individually described below:
 
 ### Client
 
+The client code is divided into separate files that each define a "class". Each one object has some
+responsibilities and they are described in detail below.
+
+#### App (web/js/app.js)
+
+This is the main starting point for the application. Its main responsibilities are:
+*  initialize all the models and views that are necessary at start up
+*  retrieve the presence session on behalf of the other objects that require it
+*  allow for event dispatching for decoupled components to communicate with one another
+
+This file also exports a global variable `App` that contains properties for the views and models it
+creates.
+
 ## Requirements
 
 *  PHP 5.3 or greater
