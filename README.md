@@ -47,6 +47,10 @@ An OpenTok 1-to-1 solution focussed on adding presence to an application
 
 6. Once either of the users chooses to "end chat," both users will return to being available.
 
+## Code and Conceptual Walkthrough
+
+*  **TODO**
+
 ## Requirements
 
 *  PHP 5.3 or greater
@@ -66,11 +70,6 @@ There are some concepts that are intentionally left out.
 *  State persistence
 
 *  Mobile clients
-
-
-## Code and Conceptual Walkthrough
-
-*  **TODO**
 
 ## Appendix
 
