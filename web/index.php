@@ -7,6 +7,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use \Slim\Slim;
 use \OpenTok\OpenTok;
+use \OpenTok\Role;
 use \werx\Config\Providers\ArrayProvider;
 use \werx\Config\Container;
 
@@ -85,7 +86,8 @@ $app->post('/users', function () use ($app, $opentok, $config) {
     $token = $opentok->generateToken($config->opentok('presenceSession'), array(
         'data' => json_encode(array( 
             'name' => $name
-        ))
+        )),
+        'role' => Role::SUBSCRIBER
     ));
     $responseData = array( 'token' => $token );
 

@@ -49,7 +49,59 @@ An OpenTok 1-to-1 solution focussed on adding presence to an application
 
 ## Code and Conceptual Walkthrough
 
-*  **TODO**
+### Technologies
+
+This application uses some of the same frameworks and libraries as the
+[HelloWorld](https://github.com/opentok/OpenTok-PHP-SDK/tree/master/sample/HelloWorld) sample. If
+you have not already gotten familiar with the code in that project, consider doing so before
+continuing. Slim is a minimalistic PHP framework, so its patterns can be applied to other
+frameworks and even other languages.
+
+In addition, the [Backbone.js](http://documentcloud.github.io/backbone/) library is used for client
+side functionality. It is a basic MV* library, and while its helpful in laying some groundwork for
+the client, the same functionality could be achieved with other libraries and frameworks or even
+with no framework at all. Along with Backbone, the client makes use of its dependencies:
+[jQuery](http://jquery.com/), and [Lodash](http://lodash.com/). Lodash is a library that is
+compatible with Underscore.js but has better performance, and its also used for view templating.
+
+### Concepts
+
+In order to achieve the presence functionality, each user needs to be aware of the state of each of
+the other users. In this implementation, we approach this from a distributed point of view, which
+means there is no central authority required so there's less overhead in storing each users state.
+The implementation requires a basic messaging channel where each user can be addressed as well as
+the whole group. OpenTok includes that exact funtionality for clients via the Session. With that
+said, we solve many of the presence problems in this application using a **presence session**,
+a global static session which every client can connect to in order to communicate presence
+information and where no video streaming is ever done.
+
+The presence session helps each client build a list of the other users of the application, and keep
+it syncrhonized as those users' state changes. A **remote user** is the representation of another
+user and its state. This list of remote users is called the **buddy list**.
+
+A **local user** is the user who using the application at an individual client. While a the remote
+user representation of a user may only expose what is essential for all the other clients to know
+in order to service the rest of the application, the local user may have more details.  One example
+is that a user who has invited another user to a chat and is waiting for the invitation to be
+accepted and a user who is actively chatting both appear identital in their remote user
+representation on other clients: unavailable.
+
+With the state of each remote user visible in the buddy list, the actual service that the rest of
+the application uses that information for is to conduct one-to-one chats. These chats start off
+as an **invitation** from one user to another. At the time an invitation is created, another OpenTok
+session needs to be created for the video streaming of the chat. The client who is creating the
+invitation is in charge of creating the new chat by requesting it from the server. The **chat**
+contains the OpenTok session ID, API Key, and token for a user that is communicating with another
+user. Once the invitation is accepted, the invited user must also request the same chat from the
+server, and the server response will contain the same chat information but with a unique token.
+Once both parties have this chat, they can connect to it and begin to communicate in a session that
+functions much like the Hello World sample.
+
+### Server
+
+
+
+### Client
 
 ## Requirements
 
