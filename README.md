@@ -64,6 +64,9 @@ with no framework at all. Along with Backbone, the client makes use of its depen
 [jQuery](http://jquery.com/), and [Lodash](http://lodash.com/). Lodash is a library that is
 compatible with Underscore.js but has better performance, and its also used for view templating.
 
+Lastly, [Bootstrap](http://getbootstrap.com/) is used to help style the UI and for reusable
+components such as buttons and modals.
+
 ### Concepts
 
 In order to achieve the presence functionality, each user needs to be aware of the state of each of
@@ -145,8 +148,22 @@ This is the main starting point for the application. Its main responsibilities a
 *  retrieve the presence session on behalf of the other objects that require it
 *  allow for event dispatching for decoupled components to communicate with one another
 
-This file also exports a global variable `App` that contains properties for the views and models it
+This file exports a global variable `App` that contains properties for the views and models it
 creates.
+
+
+### Connect Modal View (web/js/views/ConnectModalView.js)
+
+The Connect Modal View is responsible for gathering the user details required to connect to the
+presence session, and then connecting to it.
+
+The implementation wraps the interface for the basic Bootstrap modal. Within the modal, a form is
+used to collect the user name from the user.
+
+This view uses the LocalUser instance as the model to back it. The model assists in validation and
+sending the data to the server. Once the server responds with the presence session data, the local
+user connects to the presence session, which causes the local user's status to change. When the
+modal observes the status changing to 'online', it is dismissed.
 
 ## Requirements
 
