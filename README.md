@@ -14,8 +14,8 @@ An OpenTok 1-to-1 solution focussed on adding presence to an application
 
 3. Use [Composer](https://getcomposer.org/) to install dependencies: `composer install`
 
-4. Set the document root for your web server (such as Apache, nginx, etc.) to the root directory
-   of this project. In the case of Apache, the provided `.htaccess` file handles URL rewriting.
+4. Set the document root for your web server (such as Apache, nginx, etc.) to the `web` directory
+   of this project. In the case of Apache, the provided `web\.htaccess` file handles URL rewriting.
    See the [Slim Route URL Rewriting Guide](http://docs.slimframework.com/#Route-URL-Rewriting)
    for more details.
 
@@ -49,7 +49,7 @@ An OpenTok 1-to-1 solution focussed on adding presence to an application
 
 ## Requirements
 
-*  **TODO**
+*  PHP 5.3 or greater
 
 ## What's Missing
 
