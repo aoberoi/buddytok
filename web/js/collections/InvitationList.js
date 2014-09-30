@@ -205,7 +205,7 @@
         // Now that the Invitation has been accepted, it can be removed from the list
         self.remove(invitation);
 
-        // All other invitations should be declined
+        // Decline any incoming invitations
         self.each(function(otherInvitation, index) {
           self.declineInvitation(index);
         });
@@ -218,7 +218,8 @@
 
     // Recieves acceptance of an outgoing invitation via OpenTok signalling
     receiveAcceptance: function(event) {
-      var invitation;
+      var self = this,
+          invitation;
 
       // Find the corresponding Invitation object
       invitation = this.find(function(invitation) {
@@ -233,6 +234,12 @@
         log.warn('InvitationList: receiveAcceptance could not find an invitation to accept');
         return;
       }
+
+      // Decline any incoming invitations
+      this.each(function(otherInvitation, index) {
+        self.declineInvitation(index);
+      });
+
       this.remove(invitation);
 
       // Notify other objects that an invitation has been accepted (LocalUser will need to change
