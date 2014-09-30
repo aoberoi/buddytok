@@ -10,12 +10,13 @@
            undefined
          ) {
 
-  // TODO: statically assign the video options
   exports.Chat = Backbone.Model.extend({
 
     defaults: {
       subscriberName: null
     },
+
+    videoProperties: { insertMode: 'append', width: '100%', height: '100%' },
 
     initialize: function(attrs, options) {
       if (!options.localUser) {
@@ -43,7 +44,7 @@
       log.info('Chat: start');
       var self = this;
 
-      var _start = function _start() {
+      var _start = function () {
         self.subscriberEl = subscriberEl;
 
         self.session = OT.initSession(self.invitation.get('apiKey'), self.invitation.get('sessionId'));
@@ -53,21 +54,14 @@
                     .on('streamDestroyed', self.streamDestroyed, self);
         self.session.connect(self.invitation.get('token'));
 
-        self.publisher = OT.initPublisher(publisherEl, { insertMode: 'append', width: '100%', height: '100%' });
+        self.publisher = OT.initPublisher(publisherEl, self.videoProperties);
 
         self.trigger('started');
       };
 
-      // TODO: make a verifyInvitationReady or something like that
-      if (this.invitation.get('token')) {
-        this.verifyUserStatus(_start);
-      } else {
-        this.invitation.once('chatInfoReady', function() {
-          this.verifyUserStatus(_start);
-        }, this);
-        this.invitation.once('chatInfoError', this.errorHandler, this);
-        this.invitation.getChatInfo();
-      }
+      this.verifyInvitationReady(function() {
+        self.verifyUserStatus(_start);
+      });
     },
 
     end: function() {
@@ -82,6 +76,7 @@
 
     sessionDisconnected: function(event) {
       log.info('Chat: sessionDisconnected');
+      this.invitation.off(null, null, this);
       this.session.off();
       this.session = null;
       this.subscriberEl = null;
@@ -92,7 +87,7 @@
 
     streamCreated: function(event) {
       log.info('Chat: streamCreated');
-      this.subscriber = this.session.subscribe(event.stream, this.subscriberEl, { insertMode: 'append', width: '100%', height: '100%' });
+      this.subscriber = this.session.subscribe(event.stream, this.subscriberEl, this.videoProperties);
       this.trigger('subscriberJoined');
     },
 
@@ -103,6 +98,14 @@
         this.end();
       } else {
         log.warn('Chat: streamDestroyed but was not equal to subscriber stream');
+      }
+    },
+
+    verifyInvitationReady: function(done) {
+      if (this.invitation.isReadyForChat()) {
+        done();
+      } else {
+        this.invitation.getChatInfo(done, _.bind(this.errorHandler, this));
       }
     },
 

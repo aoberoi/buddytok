@@ -12,7 +12,6 @@
 
   // TODO: may not need to have both inviter and invitee fields, better to just use one for
   // remoteUser?
-  // TODO: may want to expose a better 'ready' api instead of querying for a token
   exports.Invitation = Backbone.Model.extend({
 
     defaults: {
@@ -31,17 +30,21 @@
       return _.extend(copy, response);
     },
 
-    getChatInfo: function() {
+    isReadyForChat: function() {
+      return (this.get('token') && this.get('sessionId') && this.get('apiKey'));
+    },
+
+    getChatInfo: function(success, fail) {
       var self = this;
       $.get('/chats', { sessionId: this.get('sessionId') })
         .done(function(data) {
           log.info('Invitation: getChatInfo');
           self.set('token', data.token);
-          self.trigger('chatInfoReady');
+          success();
         })
         .fail(function(jqXHR, textStatus, errorThrown) {
           log.error('Invitation: getChatInfo failed', errorThrown);
-          self.trigger('chatInfoError');
+          fail(errorThrown);
         });
     },
 
