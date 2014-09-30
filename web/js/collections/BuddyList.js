@@ -22,6 +22,7 @@
       this.dispatcher = options.dispatcher;
       this.dispatcher.once('presenceSessionReady', this.presenceSessionReady, this);
       this.dispatcher.on('getRemoteUser', this.getRemoteUser, this);
+      this.on('change:available', this.userAvailabilityChanged, this);
     },
 
     addRemoteUser: function(connection) {
@@ -44,6 +45,7 @@
       }
       log.info('BuddyList: removeRemoteUser', removingUser);
       this.remove(removingUser);
+      this.dispatcher.trigger('remoteUserBecameUnavailable', removingUser);
     },
 
     getRemoteUser: function(connection) {
@@ -87,6 +89,12 @@
           };
           this.on('add', queuedStatusUpdate);
         }
+      }
+    },
+
+    remoteUserAvailabilityChanged: function(available, remoteUser) {
+      if (!available) {
+        this.dispatcher.trigger('remoteUserBecameUnavailable', remoteUser);
       }
     },
 

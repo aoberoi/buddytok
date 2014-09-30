@@ -31,13 +31,7 @@
       }
       this.invitation = options.invitation;
 
-      this.remoteUser = this.invitation.get('incoming') ? this.invitation.get('inviter') : this.invitation.get('invitee');
-      this.set('subscriberName', this.remoteUser.get('name'));
-
-      if (this.invitation.get('incoming')) {
-        // An incoming invitation won't have sessionId information yet, therefore it needs to be
-        // requested
-      }
+      this.set('subscriberName', this.invitation.get('remoteUser').get('name'));
     },
 
     start: function(publisherEl, subscriberEl) {

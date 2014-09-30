@@ -101,7 +101,7 @@
 <script type="text/template" id="tpl-outgoing-invite">
   <div class="alert alert-info invitation" role="alert">
     <p class="pull-right"><button type="button" class="btn btn-danger invite-cancel">Cancel</button></p>
-    <p class="invite-message">Waiting for <strong><%- invitee.name %></strong> to accept your chat invitation</p>
+    <p class="invite-message">Waiting for <strong><%- remoteUser.name %></strong> to accept your chat invitation</p>
   </div>
 </script>
 
@@ -109,7 +109,7 @@
 <script type="text/template" id="tpl-incoming-invite">
   <div class="alert alert-info invitation" role="alert">
     <p class="pull-right"><button type="button" class="btn btn-danger invite-decline">Decline</button> <button type="button" class="btn btn-success invite-accept">Accept</button></p>
-    <p class="invite-message"><strong><%- inviter.name %></strong> has invited you to a chat</p>
+    <p class="invite-message"><strong><%- remoteUser.name %></strong> has invited you to a chat</p>
   </div>
 </script>
 

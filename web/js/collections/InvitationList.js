@@ -22,6 +22,7 @@
       this.dispatcher = options.dispatcher;
       this.dispatcher.once('presenceSessionReady', this.presenceSessionReady, this);
       this.dispatcher.on('inviteRemoteUser', this.inviteRemoteUser, this);
+      this.dispatcher.on('remoteUserBecameUnavailable', this.remoteUserBecameUnavailable, this);
     },
 
     // Creates an Invitation that can be sent to the RemoteUser
@@ -30,7 +31,7 @@
       log.info('InvitationList: inviteRemoteUser');
       var outgoingInvitation = new Invitation({
         incoming: false,
-        invitee: remoteUser
+        remoteUser: remoteUser
       });
       // Once the invitation is saved, it acquires a sessionId from the server
       outgoingInvitation.save({}, {
@@ -51,7 +52,7 @@
       // Construct a signal that can be sent via OpenTok
       var signal = {
         type: 'invitation',
-        to: invitation.get('invitee').connection,
+        to: invitation.get('remoteUser').connection,
         data: invitation.toSignal()
       };
       this.presenceSession.signal(signal, function(err) {
@@ -83,7 +84,7 @@
             log.info('InvitationList: remote user', remoteUser);
             var incomingInvitation = new Invitation({
               incoming: true,
-              inviter: remoteUser
+              remoteUser: remoteUser
             });
             // Deserialize any data in the signal into the new Invitation object
             incomingInvitation.fromSignal(event.data);
@@ -103,6 +104,16 @@
       this.dispatcher.trigger('getUserAvailability');
     },
 
+    // Clean up any invitations from remote users who become unavailable or offline
+    remoteUserBecameUnavailable: function(remoteUser) {
+      var self = this;
+      this.each(function(invitation) {
+        if (invitation.get('remoteUser') === remoteUser) {
+          self.remove(invitation);
+        }
+      });
+    },
+
     // Cancels an outgoing invitation that the local user has already sent via OpenTok signalling
     cancelInvitation: function(index) {
       var self = this;
@@ -111,7 +122,7 @@
       // Construct a signal that can be sent via OpenTok
       var signal = {
         type: 'cancelInvitation',
-        to: invitation.get('invitee').connection,
+        to: invitation.get('remoteUser').connection,
         data: invitation.toSignal()
       };
       this.presenceSession.signal(signal, function(err) {
@@ -134,7 +145,7 @@
       // Find the corresponding Invitation object
       var invitation = this.find(function(invitation) {
         return invitation.get('incoming')  &&
-               invitation.get('inviter').connection.connectionId === event.from.connectionId &&
+               invitation.get('remoteUser').connection.connectionId === event.from.connectionId &&
                event.data === invitation.toSignal();
       });
       // If the invitation wasn't found (e.g. there was a race where the local user declined it
@@ -155,7 +166,7 @@
       // Construct a signal that can be sent via OpenTok
       var signal = {
         type: 'acceptInvitation',
-        to: invitation.get('inviter').connection,
+        to: invitation.get('remoteUser').connection,
         data: invitation.toSignal()
       };
       this.presenceSession.signal(signal, function(err) {
@@ -182,7 +193,7 @@
       // Find the corresponding Invitation object
       var invitation = this.find(function(invitation) {
         return !invitation.get('incoming')  &&
-               invitation.get('invitee').connection.connectionId === event.from.connectionId &&
+               invitation.get('remoteUser').connection.connectionId === event.from.connectionId &&
                event.data === invitation.toSignal();
       });
       // If the invitation wasn't found (e.g. there was a race where the local user cancelled it
@@ -208,7 +219,7 @@
         invitation = this.at(arguments[0]);
       } else if (arguments[0] instanceof OT.Connection) {
         // Lookup the invitation by connection
-        invitation = this.find(function(i) { return i.get('inviter').connection === arguments[0]; });
+        invitation = this.find(function(i) { return i.get('remoteUser').connection === arguments[0]; });
       }
       // If the invitation wasn't found (e.g. there was a race where the remote user cancelled it
       // before this method was called) there's no action necessary, just log it.
@@ -219,7 +230,7 @@
       // Construct a signal that can be sent via OpenTok
       var signal = {
         type: 'declineInvitation',
-        to: invitation.get('inviter').connection,
+        to: invitation.get('remoteUser').connection,
         data: invitation.toSignal()
       };
       this.presenceSession.signal(signal, function(err) {
@@ -238,7 +249,7 @@
       // Find the corresponding Invitation object
       var invitation = this.find(function(invitation) {
         return !invitation.get('incoming')  &&
-               invitation.get('invitee').connection.connectionId === event.from.connectionId &&
+               invitation.get('remoteUser').connection.connectionId === event.from.connectionId &&
                event.data === invitation.toSignal();
       });
       // If the invitation wasn't found (e.g. there was a race where the local user cancelled it

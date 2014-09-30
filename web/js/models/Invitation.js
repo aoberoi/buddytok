@@ -10,14 +10,11 @@
            undefined
          ) {
 
-  // TODO: may not need to have both inviter and invitee fields, better to just use one for
-  // remoteUser?
   exports.Invitation = Backbone.Model.extend({
 
     defaults: {
       incoming: false,
-      invitee: null,
-      inviter: null,
+      remoteUser: null,
       sessionId: null,
       token: null,
       apiKey: null
@@ -39,7 +36,7 @@
       $.get('/chats', { sessionId: this.get('sessionId') })
         .done(function(data) {
           log.info('Invitation: getChatInfo');
-          self.set('token', data.token);
+          self.set(data);
           success();
         })
         .fail(function(jqXHR, textStatus, errorThrown) {
