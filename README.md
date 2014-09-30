@@ -21,7 +21,7 @@ An OpenTok 1-to-1 solution focussed on adding presence to an application
 
 ## Usage
 
-1. Visit the URL mapped to the application by your webserver.
+1. Visit the URL mapped to the application by your web server.
 
 2. Input a name to be identified with. You will now see a list of available users, which will start
    as empty.
@@ -29,21 +29,21 @@ An OpenTok 1-to-1 solution focussed on adding presence to an application
 3. Have another user (possibly in another window or tab) visit the same URL, and input a new user
    name.
 
-   Each of the users will see one another in the Buddy List.
+   Each of the users will see one another in the Buddies list.
 
-4. In order to start a chat with a user who is available, click the "invite" button next to their name.
+4. In order to start a chat with an available user, click the camera icon next to the user's name.
 
    A user who has sent an invitation cannot receive invitations from other users. Unavailable users
-   do not have an "invite" button next to their name.
+   do not have a camera icon next to their name in the Buddies list.
 
    While waiting for a response to an invitation, the user can use the "cancel" button to stop the
    invitation.
 
-5. An invited user will recieve an invitation to chat, which they can either accept or decline.
-   If accepted, the chat will begin. If declined, the invitation will disappear.
+5. An invited user receives an invitation to chat, which they can either accept or decline.
+   If accepted, the chat begins. If declined, the invitation disappears.
 
-   An invited user can continue to receive invitations from other users. If any of the invitations 
-   are accepted, all other invitations are automatically declined.
+   An invited user can continue to receive invitations from other users. If the user accepts an
+   invitation, all other invitations are automatically declined.
 
 6. Once either of the users chooses to "end chat," both users will return to being available.
 
@@ -69,37 +69,30 @@ components such as buttons and modals.
 
 ### Concepts
 
-In order to achieve the presence functionality, each user needs to be aware of the state of each of
-the other users. In this implementation, we approach this from a distributed point of view, which
-means there is no central authority required so there's less overhead in storing each users state.
-The implementation requires a basic messaging channel where each user can be addressed as well as
-the whole group. OpenTok includes that exact funtionality for clients via the Session. With that
-said, we solve many of the presence problems in this application using a **presence session**,
-a global static session which every client can connect to in order to communicate presence
-information and where no video streaming is ever done.
+Each user needs to be aware of the state of each of the other users -- this is known as _presence_.
+This application approach this from a distributed point of view, which means there is no central
+authority required so there's less overhead in storing each user's state. The implementation
+requires a basic messaging channel where each user or the whole group can be addressed. OpenTok
+includes that exact functionality for clients via the signaling API. This application uses a
+**presence session**, a global session which every client connects to in order to communicate
+presence information. No video streaming is done in this session.
 
-The presence session helps each client build a list of the other users of the application, and keep
-it syncrhonized as those users' state changes. A **remote user** is the representation of another
-user and its state. This list of remote users is called the **buddy list**.
+Each client uses the presence session to build a list of the other users and keep it synchronized
+as users' states change. A **remote user** is the representation of another user and its state.
+This list of remote users is called the **buddies list**. When a user joins the app (adding a user
+name), that client sends a signal to the session with details about the user. Each other user stores
+the remote user's data and state.
 
-A **local user** is the user who is using the application at an individual client. While a remote
-user representation of a user may only expose what is essential for all the other clients to
-know in order to service the rest of the application, the local user representation of the same
-user may have more details. One example is a user who has invited another user to a chat and is
-waiting for the invitation to be accepted and a user who is actively chatting both appear identital
-in their remote user representation on other clients (unavailable) while being in two different
-states in their local user representation (outgoingInvitePending and chatting, respectively).
+A **local user** is the user who is using the application on the local browser.
 
-With the state of each remote user visible in the buddy list, the actual service that the rest of
-the application uses that information for is to conduct one-to-one chats. These chats begin as an
+Each users state changes based on chat invitations and ongoing chat sessions. For example, the user's state may be unavailable, outgoingInvitePending, or chatting. The application uses the
+state of each remote user to conduct one-to-one chats. These chats begin as an
 **invitation** from one user to another. The client who is creating the invitation is in charge of
-creating the new chat by requesting it from the server. At the time an invitation is created,
-another OpenTok session needs to be created for the video streaming of the chat. The **chat**
-contains the OpenTok session ID, API Key, and token for a user that is communicating with another
-user. Once the invitation is accepted, the invited user must also request the same chat from the
-server, and the server response will contain the same chat information but with a unique token.
-Once both parties have this chat, they can connect to it and begin to communicate in a session that
-functions much like the Hello World sample.
+creating the new chat by requesting it from the server. The server uses the OpenTok PHP library to
+create a new OpenTok session for the video streaming of the chat. The **chat** contains the
+OpenTok session ID, API Key, and token for the user. When the invitation is accepted, the invited
+user requests the same chat from the server, and the server response will contain the same chat information but with a unique token. Once both parties have this chat, they connect to it and
+publish and subscribe to audio-video streams, much like the Hello World sample.
 
 ### Server
 
@@ -111,23 +104,20 @@ in the Slim application and is individually described below:
 
 *  `POST /users` -- In order for a user to connect to the presence session, they must post the
    required details about themselves to this endpoint. In this case, the required details just
-   include a JSON encoded `name`. Its in this handler that the token is generated because the server
-   uses OpenTok token's connection data feature to store the name of the user in the token. The
-   distinction between the name and the other state (which is sent over the presence session) is
-   that the name never changes, so its ideal for storing in the connection data. Also, note that the
-   token is given the role `Role::SUBSRCIBER`. This is because no users are allowed to publish into
-   the presence session nor are there any streams to subscribe to. If you were interested in adding
-   authentication and starting a session for the user, this would be the right handler to create the
-   session within.
+   include a JSON encoded `name`. The handler uses the OpenTok token's connection data feature
+   to store the user name in the token. The distinction between the name and the other state
+   (which is sent over the presence session) is that the name never changes, so its ideal for 
+   storing in the connection data. Also, note that the token is given the role `Role::SUBSRCIBER`.
+   This is because no users are allowed to publish into the presence session. If you were interested
+   in adding authentication for the user, you would do so in this handler.
 
-*  `POST /chats` -- When a user chooses to invite another user to a chat, it recieves its the chat's
+*  `POST /chats` -- When a user chooses to invite another user to a chat, it receives its the chat's
    representation from this handler. In this handler, the OpenTok SDK is used to create a new
-   session, and return its ID and the details required to connect to it (API key and token). The
-   token is unique and not shared between both participants of the chat. Since there is no
-   authentication in this application, there is no opportunity to perform authorization for the
-   chat. If there was, this handler would be the right place to create a record for the chat in
-   a database and then when the invited user were to request the chat data authorization could be
-   performed to make sure the requesting user is the invited user for that chat.
+   session and return its ID along with the API key and a token. The token is unique for each
+   participant in the chat. Since there is no authentication in this application, there is no
+   opportunity to perform authorization in the chat. If there was, you could use this handler to
+   create a record for the chat in a database; then when the invited user requests the chat, the
+   handler could authorize data  to make sure the requesting user is the invited user for that chat.
 
 *  `GET /chats?sessionId=[sessionId]` -- When the invited user accepts an invitation, it also needs
    the details required to connect to the chat. Since there is no authentication in this
@@ -138,24 +128,25 @@ in the Slim application and is individually described below:
 
 ### Client
 
-The client code is divided into separate files that each define a "class". Each one object has some
-responsibilities and they are described in detail below.
+The client code is divided into separate files that each define a "class". Each class is described
+below.
 
 #### App (web/js/app.js)
 
 This is the main starting point for the application. Its main responsibilities are:
-*  initialize all the models and views that are necessary at start up
-*  retrieve the presence session on behalf of the other objects that require it
-*  allow for event dispatching for decoupled components to communicate with one another
 
-This file exports a global variable `App` that contains properties for the views and models it
+*  Initializing all models and views that are necessary at start up.
+*  Retrieving the presence session on behalf of the other objects that require it.
+*  Allowing for event dispatching for decoupled components to communicate with one another.
+
+This file exports a global variable `App`, which contains properties for the views and models it
 creates.
 
 
-### Connect Modal View (web/js/views/ConnectModalView.js)
+#### ConnectModalView (web/js/views/ConnectModalView.js)
 
-The Connect Modal View is responsible for gathering the user details required to connect to the
-presence session, and then connecting to it.
+The ConnectModalView is responsible for gathering the user details required to connect to the
+presence session, and for connecting to the presence session.
 
 The implementation wraps the interface for the basic Bootstrap modal. Within the modal, a form is
 used to collect the user name from the user.
@@ -178,30 +169,29 @@ The Local User's main responsibilities are:
 
 *  PHP 5.3 or greater
 
-## What's Missing
+## Next steps
 
-There are some concepts that are intentionally left out.
+Here are some other customizations that you may consider adding to the app:
 
-*  User authentication and authorization: Typically, before allowing a user to access a session you
-   would want to ask them to identify themselves through a registration and authentication process. 
-   Then, before allowing access to the session the server would authorize the user, often times by
-   checking a session cookie. This sample is open to anonymous access and doesn't intend to add those
-   concepts.
+*  User authentication and authorization -- Typically, before allowing a user to access a session
+   you would want to ask them to identify themselves through a registration and authentication
+   process. Then, before allowing access to the session the server would authorize the user, often
+   times by checking a session cookie.
 
-*  Background and push notifications.
+*  Background and push notifications -- You can use the HTML5 web notifications API to alert users
+   of invitations when the app is in the background.
 
-*  State persistence
+*  Mobile clients -- In an OpenTok app running on a mobile client, you can use push notifications
+   from the server to an installed client app. You may also store the user's state on the server
+   when the application is inactive.
 
-*  Mobile clients
 
-## Appendix
-
-### Deploying to Heroku
+## Appendix -- Deploying to Heroku
 
 Heroku is a PaaS (Platform as a Service) that can be used to deploy simple and small applications
 for free. For that reason, you may choose to experiment with this code and deploy it using Heroku.
 
-*  The provided `Procfile` decribes a web process which can launch this application.
+*  The provided `Procfile` describes a web process which can launch this application.
 
 *  User Heroku config to set the following keys:
 
@@ -213,6 +203,6 @@ for free. For that reason, you may choose to experiment with this code and deplo
       configure the application. The Slim application will only start reading its Heroku config when
       its mode is set to `'production'`
 
-   You should avoid commiting configuration and secrets to your code, and instead use Heroku's
+   You should avoid committing configuration and secrets to your code, and instead use Heroku's
    config functionality.
 
